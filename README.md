@@ -8,7 +8,7 @@ Freely change anything, now everything is more or less placeholder code.
     - implement `instr_encode_pack.vhd`, as described on slides RISC-V 17.11.2023; use it in `init_memory` to generate test instruction sequences **(easier)**
     - generate `.txt` files with instruction sequences, and read these files in init_memory **(harder, has obscure advantages)**
 ### Malte
-- `print_trace_pack` : All (read) and write functions with FILE-IO for printing traces, reading files (may be useful for `init_memory`) 
+- `print_trace_pack` : All (read) and write functions with FILE-IO for printing traces (reading files may be useful for `init_memory`) 
 ### Roman
 - `System.vhd` : The whole decode-fetch-execute pipeline; increment PC; +configuration
 ### Diyor
