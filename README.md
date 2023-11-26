@@ -3,7 +3,7 @@
 ## TODO
 Freely change anything, now everything is more or less placeholder code.
 ### Andrei
-- `cpu_defs_pack.vhd` : All types and constants definitions; check all proper sizes (mostly done)
+- `cpu_defs_pack.vhd` : All types and constants definitions; check all proper sizes (mnemonics for registers should be added)
 - `mem_defs_pack.vhd` : Implement function `init_memory` (2 options):
     - implement `instr_encode_pack.vhd`, as described on slides RISC-V 17.11.2023; use it in `init_memory` to generate test instruction sequences **(easier)**
     - generate `.txt` files with instruction sequences, and read these files in init_memory **(harder, has obscure advantages)**
