@@ -5,7 +5,7 @@ use IEEE.NUMERIC_STD.ALL;
 library work
 use work.cpu_defs_pack.all;
 use work.mem_defs_pack.all;
-use work.instr_defs_pack.all;
+use work.instr_exec_pack.all;
 use work.conversions_pack.all;
 
 entity System is 
@@ -15,10 +15,16 @@ end System;
 architecture functional of System is
 begin
     process
-    use work.cpu_defs_pack.all;
     -- init Memory as MemType object TODO!
-    Memory := 
-    PC :=
+    variable Memory: MemType := init_memory;
+    variable Reg : RegType;
+    variable Instr : InstrType;
+    variable OP : OpcodeType;
+    variable X, Y, Z : reg_addr_type; -- change
+    variable PC : AddrType := 0;
+
+    -- Memory := 
+    -- PC :=
     begin
         -- cmd FETCH TODO
         Instr := Memory(PC)

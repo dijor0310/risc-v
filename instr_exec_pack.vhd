@@ -3,10 +3,10 @@ use IEEE.STD_LOGIC_1164.ALL;
 use IEEE.NUMERIC_STD.ALL;
 
 library work;
-use work.bit_vector_natural_pack.all;
+use work.conversions_pack.all;
 use work.cpu_defs_pack.all;
 
-package instr_defs_pack is
+package instr_exec_pack is
     
     function INC(p:addr_type)
         return addr_type;
@@ -66,13 +66,13 @@ package instr_defs_pack is
         return data_type;
 
 
-end instr_defs_pack;
+end instr_exec_pack;
 
 -- Implementation of logic and arithmetic instructions
 -- Notes:
     -- bit'pos() - type cast <bit> to <integer>
     -- bit'val() - type cast <integer> to <bit>
-package body instr_defs_pack is
+package body instr_exec_pack is
 
     function INC( A : in addr_type ) return addr_type is
         variable C : bit := '1'; -- carry to calculate next PC (NOT carry flag!)
@@ -160,4 +160,4 @@ package body instr_defs_pack is
             R := A(A'left-1 downto 0) & CI;
         end EXEC_ROLC;
 
-end instr_defs_pack;
+end instr_exec_pack;

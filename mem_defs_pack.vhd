@@ -1,6 +1,7 @@
 use WORK.cpu_defs_pack.MemType;
 
 package mem_defs_pack is
+    -- constant memory_content : MemType;
     function init_memory return MemType;
 package end mem_defs_pack;
 
