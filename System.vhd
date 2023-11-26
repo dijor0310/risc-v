@@ -6,7 +6,7 @@ library work
 use work.cpu_defs_pack.all;
 use work.mem_defs_pack.all;
 use work.instr_exec_pack.all;
-use work.conversions_pack.all;
+use work.bit_vector_natural_pack.all;
 
 entity System is 
 end System;
@@ -20,11 +20,11 @@ begin
     variable Reg : RegType;
     variable Instr : InstrType;
     variable OP : OpcodeType;
-    variable X, Y, Z : reg_addr_type; -- change
+    variable X, Y, Z : reg_addr_type; -- change TODO
     variable PC : AddrType := 0;
+    variable Zero, Carry, Negative, Overflow : bit := '0' ; -- Flags 
 
     -- Memory := 
-    -- PC :=
     begin
         -- cmd FETCH TODO
         Instr := Memory(PC)

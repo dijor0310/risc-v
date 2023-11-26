@@ -15,10 +15,14 @@ package cpu_defs_pack is
     constant RegDataSize : integer := 32;
     constant RegAddrSize : integer := 5;
 
+    -- assuming BusDatasize == RegDataSize
+    constant DataSize : integer := 32;
+
     subtype AddrType is bit_vector (AddrSize-1 downto 0);
     subtype InstrType is bit_vector (InstrSize-1 downto 0);
     subtype BusDataType is bit_vector (BusDataSize-1 downto 0);
     subtype RegDataType is bit_vector (RegDataSize-1 downto 0);
+    subtype DataType is bit_vector (DataSize-1 downto 0);
     -- type for rd, rs1, rs2
     subtype RegAddrType is bit_vector(RegAddrSize-1 downto 0);
     type RegType is array (2**RegAddrSize-1 downto 0) of RegDataType;

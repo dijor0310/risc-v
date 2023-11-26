@@ -5,7 +5,7 @@ use IEEE.NUMERIC_STD.ALL;
 library work;
 use work.cpu_defs_pack.all;
 
-package conversions_pack is
+package bit_vector_natural_pack is
 
     function bit_vector2natural(constant A: bit_vector)
         return integer;
@@ -14,14 +14,14 @@ package conversions_pack is
      constant data_width : natural)
         return bit_vector;
     
-end conversions_pack;
+end bit_vector_natural_pack;
     
-package body conversions_pack is
+package body bit_vector_natural_pack is
 
     function bit_vector2natural(constant A: bit_vector)
         return integer is
         begin
-            return to_integer(unsigned(to_stdlogicvector(A)));
+            return to_integer(unsigned(A));
     end bit_vector2natural;
 
     function natural2bit_vector(constant A :integer;
@@ -31,4 +31,4 @@ package body conversions_pack is
             return bit_vector(to_unsigned(A, data_width));
     end natural2bit_vector;
 
-end conversions_pack;
+end bit_vector_natural_pack;

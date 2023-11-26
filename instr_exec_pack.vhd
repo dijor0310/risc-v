@@ -3,7 +3,7 @@ use IEEE.STD_LOGIC_1164.ALL;
 use IEEE.NUMERIC_STD.ALL;
 
 library work;
-use work.conversions_pack.all;
+use work.bit_vector_natural_pack.all;
 use work.cpu_defs_pack.all;
 
 package instr_exec_pack is
@@ -11,59 +11,61 @@ package instr_exec_pack is
     function INC(p:addr_type)
         return addr_type;
     
-    procedure EXEC_ADDC (
-        constant A,B : in data_type;
+    procedure EXEC_ADD (
+        constant A,B : in DataType;
         constant CI : in Boolean;
-        variable R : out data_type;
+        variable R : out DataType;
         variable Z,CO,N,O : out Boolean );
 
-    procedure EXEC_SUBC (
-        constant A,B : in data_type;
+    procedure EXEC_SUB (
+        constant A,B : in DataType;
         constant CI : in Boolean;
-        variable R : out data_type;
+        variable R : out DataType;
         variable Z,CO,N,O : out Boolean );
     
     procedure EXEC_SLL (
-        constant A : in data_type;
-        variable R : out data_type;
+        constant A : in DataType;
+        variable R : out DataType;
         variable CO : out bit;
         variable O : out bit );
 
     procedure EXEC_SRL (
-        constant A : in data_type;
-        variable R : out data_type;
+        constant A : in DataType;
+        variable R : out DataType;
         variable CO : out bit;
         variable O : out bit ); 
 
     procedure EXEC_SRA (
-        constant A : in data_type;
-        variable R : out data_type;
+        constant A : in DataType;
+        variable R : out DataType;
         variable CO : out bit;
         variable O : out bit );
 
-    procedure EXEC_ROLC (
-        constant A : in data_type;
-        constant CI : in bit;
-        variable R : out data_type;
-        variable CO : out bit );
+    procedure EXEC_LUI (
+        constant A : in DataType;
+        variable R : out DataType;
+        variable CO : out bit;
+        variable O : out bit );
 
-    procedure RORC (
-        constant A : in data_type;
-        constant CI : in bit;
-        variable R : out data_type;
-        variable CO : out bit );
+    procedure EXEC_AUIPC (
+        constant A : in DataType;
+        constant PC: in AddrType;
+        variable R : out DataType;
+        variable CO : out bit;
+        variable O : out bit; 
+        variable Z,N,O : out bit );
+    
+    function "NOT" (constant A : DataType)
+        return DataType;
 
-    function "NOT" (constant A :data_type)
-        return data_type;
-
-    function "AND" (constant A, B :data_type)
-        return data_type;
+    function "AND" (constant A, B : DataType)
+        return DataType;
         
-    function "OR" (constant A, B :data_type)
-        return data_type;
+    function "OR" (constant A, B : DataType)
+        return DataType;
 
-    function "XOR" (constant A, B :data_type)
-        return data_type;
+    function "XOR" (constant A, B : DataType)
+        return DataType;
 
 
 end instr_exec_pack;
@@ -88,16 +90,16 @@ package body instr_exec_pack is
             return R;
         end INC;
     
-    procedure EXEC_ADDC (
-            constant A,B : in data_type;
+    procedure EXEC_ADD (
+            constant A,B : in DataType;
             constant CI : in bit;
-            variable R : out data_type;
+            variable R : out DataType;
             variable Z,CO,N,O : out bit ) is
         variable C_TMP : bit := CI;
         variable N_TMP : bit;
-        variable R_TMP : data_type;
+        variable R_TMP : DataType;
         variable T : integer range 0 to 3;
-        constant zero_v: data_type := (others => '0');
+        constant zero_v: DataType := (others => '0');
         begin
             for i in A'reverse_range loop
                 T := bit'pos(A(i)) + bit'pos(B(i)) + bit'pos(C_TMP);
@@ -111,37 +113,20 @@ package body instr_exec_pack is
             N := N_TMP;
             R := R_TMP;
             Z := bit'val(boolean'pos(R_TMP = zero_v));
-        end EXEC_ADDC;
+        end EXEC_ADD;
 
-    procedure EXEC_SUBC (
-            constant A,B : in data_type;
+    procedure EXEC_SUB (
+            constant A,B : in DataType;
             constant CI : in bit;
-            variable R : out data_type;
+            variable R : out DataType;
             variable Z,CO,N,O : out bit ) is
-        variable C_TMP : bit := CI;
-        variable N_TMP : bit;
-        variable R_TMP : data_type;
-        variable T : integer range 0 to 3;
-        constant zero_v: data_type := (others => '0');
         begin
-            for i in A'reverse_range loop
-                T := bit'pos(A(i)) - bit'pos(B(i)) - bit'pos(C_TMP);
-                R_TMP(i) := bit'val(T mod 2);
-                C_TMP := bit'val(T / 2);
-            end loop;
-            CO := C_TMP;
-            -- should check this!!!
-            T := bit'pos(A(A'length-1)) + bit'pos(B(B'length-1)) + bit'pos(C_TMP);
-            N_TMP := bit'val(T mod 2);
-            O := R_TMP( data_width-1 ) XOR N_TMP;
-            N := N_TMP;
-            R := R_TMP;
-            Z := bit'val(boolean'pos(R_TMP = zero_v));
-        end EXEC_SUBC;
+            EXEC_ADD(A,(NOT B),'1',R,Z,CO,N,O);
+        end EXEC_SUB;
 
     procedure EXEC_SLL (
-            constant A : in data_type;
-            variable R : out data_type;
+            constant A : in DataType;
+            variable R : out DataType;
             variable CO : out bit;
             variable O : out bit ) is
         begin
@@ -149,15 +134,74 @@ package body instr_exec_pack is
             O := A(A'left) xor A(A'left-1);
             R := A(A'left-1 downto 0) & '0';
         end EXEC_SLL;
-    
-    procedure EXEC_ROLC (
-            constant A : in data_type;
-            constant CI : in bit;
-            variable R : out data_type;
-            variable CO : out bit ) is
+
+    procedure EXEC_SRL (
+            constant A : in DataType;
+            variable R : out DataType;
+            variable CO : out bit;
+            variable O : out bit ) is
         begin
-            CO := A(A'left);
-            R := A(A'left-1 downto 0) & CI;
-        end EXEC_ROLC;
+            CO := A(0);
+            O := A(0) xor A(1);
+            R := '0' & A(A'left downto 1);        
+        end EXEC_SRL;
+
+    procedure EXEC_SRA (
+            constant A : in DataType;
+            variable R : out DataType;
+            variable CO : out bit;
+            variable O : out bit ) is
+        begin
+                 
+        end EXEC_SRA;
+
+    procedure EXEC_LUI (
+            constant A : in DataType;
+            variable R : out DataType;
+            variable CO : out bit;
+            variable O : out bit ) is
+        begin
+            shift: for k in 0 to 11 loop
+                EXEC_SLL(A,R,CO,O);
+                A := R;
+            end loop shift;
+        end EXEC_LUI;
+
+    procedure EXEC_AUIPC (
+            constant A : in DataType;
+            constant PC: in AddrType;
+            variable R : out DataType;
+            variable CO : out bit;
+            variable O : out bit; 
+            variable Z,N,O : out bit ) is
+        begin 
+            shift: for k in 0 to 11 loop
+                EXEC_SLL(A,R,CO,O);
+                A := R;
+            end loop shift;
+            EXEC_ADD(PC,A,CO,R,Z,CO,N,O);
+        end EXEC_AUIPC;
+    
+    function "NOT" (constant A :DataType) return DataType is
+        begin
+            return NOT A;
+        end "NOT";
+
+    function "AND" (constant A, B :DataType) return DataType is
+        begin
+            return (A AND B);
+        end "AND";
+        
+    function "OR" (constant A, B :DataType) return DataType is
+        begin
+            return (A OR B);
+        end "OR";
+
+    function "XOR" (constant A, B :DataType) return DataType is 
+        begin
+            return (A XOR B);
+        end "XOR";
+
+
 
 end instr_exec_pack;
