@@ -8,20 +8,23 @@ use work.cpu_defs_pack.all;
 
 package instr_exec_pack is
     
-    function INC(p:addr_type)
-        return addr_type;
+    function INC(A:AddrType)
+        return AddrType;
+
+--    function sext(p:DataType)
+--        return DataType;
     
     procedure EXEC_ADD (
         constant A,B : in DataType;
-        constant CI : in Boolean;
+        constant CI : in bit;
         variable R : out DataType;
-        variable Z,CO,N,O : out Boolean );
+        variable Z,CO,N,O : out bit );
 
     procedure EXEC_SUB (
         constant A,B : in DataType;
-        constant CI : in Boolean;
+        constant CI : in bit;
         variable R : out DataType;
-        variable Z,CO,N,O : out Boolean );
+        variable Z,CO,N,O : out bit );
     
     procedure EXEC_SLL (
         constant A : in DataType;
@@ -53,7 +56,15 @@ package instr_exec_pack is
         variable R : out DataType;
         variable CO : out bit;
         variable O : out bit; 
-        variable Z,N,O : out bit );
+        variable Z,N : out bit );
+    
+    procedure EXEC_SLTU (
+        constant A,B: in DataType;
+        variable R : out DataType );
+    
+    procedure EXEC_SLT (
+        constant A,B: in DataType;
+        variable R : out DataType );
     
     function "NOT" (constant A : DataType)
         return DataType;
@@ -76,10 +87,10 @@ end instr_exec_pack;
     -- bit'val() - type cast <integer> to <bit>
 package body instr_exec_pack is
 
-    function INC( A : in addr_type ) return addr_type is
+    function INC( A : in AddrType ) return AddrType is
         variable C : bit := '1'; -- carry to calculate next PC (NOT carry flag!)
         variable T: integer range 0 to 2; -- temporal sum
-        variable R : addr_type; -- result
+        variable R : AddrType; -- result
         begin
             -- bitwise sum of A and '1' 
             for i in A'reverse_range loop -- iteration starts with LSB
@@ -89,7 +100,7 @@ package body instr_exec_pack is
             end loop;
             return R;
         end INC;
-    
+
     procedure EXEC_ADD (
             constant A,B : in DataType;
             constant CI : in bit;
@@ -109,7 +120,7 @@ package body instr_exec_pack is
             CO := C_TMP;
             T := bit'pos(A(A'length-1)) + bit'pos(B(B'length-1)) + bit'pos(C_TMP);
             N_TMP := bit'val(T mod 2);
-            O := R_TMP( data_width-1 ) XOR N_TMP;
+            O := R_TMP( DataSize-1 ) XOR N_TMP;
             N := N_TMP;
             R := R_TMP;
             Z := bit'val(boolean'pos(R_TMP = zero_v));
@@ -152,7 +163,9 @@ package body instr_exec_pack is
             variable CO : out bit;
             variable O : out bit ) is
         begin
-                 
+            CO := A(0);
+            O := A(0) xor A(1);
+            R := A(A'left) & A(A'left downto 1);
         end EXEC_SRA;
 
     procedure EXEC_LUI (
@@ -160,11 +173,15 @@ package body instr_exec_pack is
             variable R : out DataType;
             variable CO : out bit;
             variable O : out bit ) is
+            variable A_TMP: DataType;
+            variable R_TMP: DataType;
         begin
+            A_TMP := A;
             shift: for k in 0 to 11 loop
-                EXEC_SLL(A,R,CO,O);
-                A := R;
+                EXEC_SLL(A_TMP,R_TMP,CO,O);
+                A_TMP := R_TMP;
             end loop shift;
+            R := R_TMP;
         end EXEC_LUI;
 
     procedure EXEC_AUIPC (
@@ -173,14 +190,43 @@ package body instr_exec_pack is
             variable R : out DataType;
             variable CO : out bit;
             variable O : out bit; 
-            variable Z,N,O : out bit ) is
+            variable Z,N : out bit ) is
+            variable A_TMP: DataType;
+            variable R_TMP: DataType;
+            variable CO_TMP: bit;
         begin 
+            A_TMP := A;
             shift: for k in 0 to 11 loop
-                EXEC_SLL(A,R,CO,O);
-                A := R;
+                EXEC_SLL(A_TMP,R_TMP,CO_TMP,O);
+                A_TMP := R_TMP;
             end loop shift;
-            EXEC_ADD(PC,A,CO,R,Z,CO,N,O);
+            EXEC_ADD(PC,A_TMP,CO_TMP,R,Z,CO_TMP,N,O);
+            CO := CO_TMP;
         end EXEC_AUIPC;
+    
+    procedure EXEC_SLTU (
+            constant A,B: in DataType;
+            variable R : out DataType ) is
+            variable R_TMP: bit;
+        begin 
+            -- variable R_TMP: bit;
+            if bit_vector2natural(A) < bit_vector2natural(B) then R_TMP := bit'val(1);
+            else R_TMP := bit'val(0);
+            end if;
+            R := natural2bit_vector(0, DataSize);
+            R(0) := R_TMP;
+        end EXEC_SLTU;
+
+    procedure EXEC_SLT (
+            constant A,B: in DataType;
+            variable R : out DataType ) is 
+        begin
+            R := natural2bit_vector(0, DataSize);
+            if A(A'left) = B(B'left) then EXEC_SLTU(A,B,R);
+            elsif A(A'left) = '1' then R(0) := '1';
+            else R(0) := '0';
+            end if;
+        end EXEC_SLT;
     
     function "NOT" (constant A :DataType) return DataType is
         begin

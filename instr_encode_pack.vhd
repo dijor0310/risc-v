@@ -11,5 +11,9 @@ package instr_encode_pack is
 end instr_encode_pack;
 
 package body instr_encode_pack is
-
+    function XORIcode( rd, rs1 : RegAddrType; imm : Imm12Type) return InstrType is
+        constant Instr : InstrType := imm & rs1 & Func3CodeXORI & rd & OpCodeIType;
+        begin
+            return Instr;
+        end XORIcode;
 end instr_encode_pack;

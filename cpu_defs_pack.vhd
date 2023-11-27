@@ -1,6 +1,6 @@
 library IEEE;
-use IEEE.STD_LOGIC_1164.ALL;
-use IEEE.NUMERIC_STD.ALL;
+--use IEEE.STD_LOGIC_1164.ALL;
+--use IEEE.NUMERIC_STD.ALL;
 library work;
 -- use work.type_defs.all
 
@@ -25,8 +25,8 @@ package cpu_defs_pack is
     subtype DataType is bit_vector (DataSize-1 downto 0);
     -- type for rd, rs1, rs2
     subtype RegAddrType is bit_vector(RegAddrSize-1 downto 0);
-    type RegType is array (2**RegAddrSize-1 downto 0) of RegDataType;
-    type MemType is array (2**AddrSize-1 downto 0) of BusDataType;
+    type RegType is array (2**RegAddrSize-1 downto 0) of DataType;
+    type MemType is array (2**AddrSize-1 downto 0) of DataType;
 
     -- type for op-field, funct3 and imm
     subtype OpType is bit_vector(6 downto 0);
@@ -34,11 +34,11 @@ package cpu_defs_pack is
     subtype Imm12Type is bit_vector(11 downto 0); 
 
     -- test variables -- TO DELETE
-    variable PC : AddrType := X"0000";
-    variable Instr : InstrType := (others => '0');
-    variable Reg : RegType := (others => (others => '0') );
+--    variable PC : AddrType := X"0000";
+--    variable Instr : InstrType := (others => '0');
+--    variable Reg : RegType := (others => (others => '0') );
 
-    variable Mem: MemType := (others => (others => '0') );
+--    variable Mem: MemType := (others => (others => '0') );
     -- end test variables;
 
     -- should go to mnemonics
@@ -46,17 +46,19 @@ package cpu_defs_pack is
     constant OpCodeSType : OpType := "0100011";
     -- more to follow …
     constant Func3CodeSb : Func3Type := "000"; -- SB Instruction
+    constant OpCodeIType : OpType := "0010011";
+    constant Func3CodeXORI : Func3Type := "100";
     -- more to follow …
     -- end test opcode constants;
 
     function get (
-        constant Memory : in mem_type;
-        constant addr : in addr_type )
-        return data_type;
+        constant Memory : in MemType;
+        constant addr : in AddrType )
+        return DataType;
     procedure set (
-        variable Memory : inout mem_type;
-        constant addr : in addr_type;
-        constant data : in data_type );
+        variable Memory : inout MemType;
+        constant addr : in AddrType;
+        constant data : in DataType );
 
 end cpu_defs_pack;
 
@@ -65,7 +67,7 @@ package body cpu_defs_pack is
 
     function get (
         constant Memory : in MemType;
-        constant addr : in AddrType ) return BusDataType is
+        constant addr : in AddrType ) return DataType is
         begin
             return Memory(to_integer(unsigned(addr)));
     end get;
@@ -73,7 +75,7 @@ package body cpu_defs_pack is
     procedure set (
         variable Memory : inout MemType;
         constant addr : in AddrType;
-        constant data : in BusDataType ) is
+        constant data : in DataType ) is
         begin
             Memory(to_integer(unsigned(addr))) := data;
     end set;
