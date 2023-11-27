@@ -31,6 +31,18 @@ begin
         opcode := 
 
         -- cmd DECODE TODO
+
+            -- LOAD instructions
+            -- lb LOAD BYTE
+
+            -- lbu LOAD UNSIGNED BYTE
+
+            -- lh LOAD HALF-WORD
+
+            -- lhu LOAD UNSIGNED HALF-WORD
+            
+            -- lw LOAD WORD
+
         -- cmd EXECUTE TODO
     end process;
 
