@@ -78,6 +78,13 @@ package instr_exec_pack is
     function "XOR" (constant A, B : DataType)
         return DataType;
 
+    procedure Set_Flags_Load(
+        constant Data: in DataType;
+        variable Z,N,O : inout bit);
+        
+    procedure Set_Flags_Logic(
+        constant Data: in DataType;
+        variable Z,N,O : inout bit);
 
 end instr_exec_pack;
 
@@ -248,6 +255,28 @@ package body instr_exec_pack is
             return (A XOR B);
         end "XOR";
 
+    procedure Set_Flags_Load(
+        constant Data: in DataType;
+        variable Z,N,O : inout bit) is
+        variable R_TMP: DataType;
+        variable Z_TMP: bit;
+        variable N_TMP: bit;
+        variable O_TMP: bit;
+        variable CO: bit;
+        begin
+            EXEC_ADD(Data,natural2bit_vector(0, 32),'0',R_TMP,Z_TMP,CO,N_TMP,O_TMP);
+    end Set_Flags_Load;
 
+    procedure Set_Flags_Logic(
+        constant Data: in DataType;
+        variable Z,N,O : inout bit) is
+        variable R_TMP: DataType;
+        variable Z_TMP: bit;
+        variable N_TMP: bit;
+        variable O_TMP: bit;
+        variable CO: bit;
+        begin
+            EXEC_ADD(Data,natural2bit_vector(0, 32),'0',R_TMP,Z_TMP,CO,N_TMP,O_TMP);
+    end Set_Flags_Logic;
 
 end instr_exec_pack;
