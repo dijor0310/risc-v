@@ -7,7 +7,7 @@ use work.bit_vector_natural_pack.all;
 use work.cpu_defs_pack.all;
 
 package instr_encode_pack is
-
+    function XORIcode( rd, rs1 : RegAddrType; imm : Imm12Type) return InstrType;
 end instr_encode_pack;
 
 package body instr_encode_pack is
