@@ -1,5 +1,3 @@
--- package to print traces of cmd executions
--- TODO
 library IEEE;
 
 use ieee.numeric_bit.all;
@@ -56,9 +54,9 @@ package body print_trace_pack is
     
     procedure write_PC_CMD(
         variable l: inout line;
-        constant PC: in DataType;
-        constant OP: in OpType;
-        constant X, Y, Z: in RegAddrType) is
+        constant PC: in Data_Type;
+        constant OP: in Opcode_Type;
+        constant X, Y, Z: in Reg_Addr_Type) is
         
         begin 
                 write(  l , hex_image (PC), left, 3);
@@ -74,7 +72,7 @@ package body print_trace_pack is
 
     procedure write_param(
         variable l: inout line;
-        constant P: in DataType) is
+        constant P: in Data_Type) is
         
         begin 
                 write(  l , hex_image (P), left, 3);
