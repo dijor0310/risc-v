@@ -14,19 +14,19 @@ package print_trace_pack is
     procedure print_tail( variable f: out text);
     procedure write_PC_CMD(
         variable l: inout line;
-        constant PC: in DataType;
-        constant OP: in OpType;
-        constant X, Y, Z: in RegAddrType);
+        constant PC: in Data_Type;
+        constant OP: in Opcode_Type;
+        constant X, Y, Z: in Reg_Addr_Type);
     procedure write_param(
         variable l: inout line;
-        constant P: in DataType);
+        constant P: in Data_Type);
     procedure write_no_param(
         variable l: inout line);
     procedure write_regs(
         variable l: inout line;
-        constant R0, R1, R2, R3: in DataType);
-    function hex_image ( d: DataType) return string;
-    function cmd_image ( cmd: OPType) return string;
+        constant R0, R1, R2, R3: in Data_Type);
+    function hex_image ( d: Data_Type) return string;
+    function cmd_image ( cmd: Opcode_Type) return string;
     function bool_character(b : boolean ) return character;
 end print_trace_pack;
 
