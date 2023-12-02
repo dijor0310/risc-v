@@ -8,17 +8,13 @@ package cpu_defs_pack is
     
 
     -- PC, addr wire of bus, memory depth
-    constant AddrSize : integer := 16; 
-    constant AddrSizeM1 : integer := AddrSize - 1;
-
+    constant AddrSize : integer := 16;
 
     -- (maximum) instruction size
     constant InstrSize : integer := 32; 
-    constant InstrSizeM1 : integer := InstrSize - 1;
 
     -- data wire of bus, memory width
     constant BusDataSize : integer := 32; 
-    constant BusDataSizeM1 : integer := BusDataSize - 1;
 
     -- register sizes
     constant RegDataSize : integer := 32;
@@ -26,7 +22,10 @@ package cpu_defs_pack is
     -- register address size
     constant RegAddrSize : integer := 5;
 
-    constant DataSize : integer := 32; -- assuming BusDatasize == RegDataSize
+    -- assuming BusDatasize == RegDataSize
+    constant DataSize : integer := 32; 
+
+    constant ADDR_RESET: bit_vector(AddrSize-1 downto 0) :=  X"00000000";
 
 
     -- Instruction for Layout Types
@@ -61,110 +60,27 @@ package cpu_defs_pack is
     constant IMM_S_B_START: integer := 11;
     constant IMM_S_B_END: integer := 7;
 
-    -- PC unit opcodes
-    constant PCU_OP_NOP: bit_vector(1 downto 0):= "00";
-    constant PCU_OP_INC: bit_vector(1 downto 0):= "01";
-    constant PCU_OP_ASSIGN: bit_vector(1 downto 0):= "10";
-    constant PCU_OP_RESET: bit_vector(1 downto 0):= "11";
-
-    -- Opcodes
-    constant OPCODE_LOAD: bit_vector(4 downto 0) := "00000";
-    constant OPCODE_STORE: bit_vector(4 downto 0) := "01000";
-    constant OPCODE_BRANCH: bit_vector(4 downto 0) := "11000";
-    constant OPCODE_JALR: bit_vector(4 downto 0) := "11001";
-    constant OPCODE_JAL: bit_vector(4 downto 0) := "11011";
-    constant OPCODE_SYSTEM: bit_vector(4 downto 0) := "11100";
-    constant OPCODE_OP: bit_vector(4 downto 0) := "01100";
-    constant OPCODE_OPIMM: bit_vector(4 downto 0) := "00100";
-    constant OPCODE_MISCMEM: bit_vector(4 downto 0) := "00011";
-    constant OPCODE_AUIPC: bit_vector(4 downto 0) := "00101";
-    constant OPCODE_LUI: bit_vector(4 downto 0) := "01101";
-
-    -- Flags
-    constant F3_LOAD_LB: bit_vector(2 downto 0) := "000";
-    constant F3_LOAD_LH: bit_vector(2 downto 0) := "001";
-    constant F3_LOAD_LW: bit_vector(2 downto 0) := "010";
-    constant F3_LOAD_LBU: bit_vector(2 downto 0) := "100";
-    constant F3_LOAD_LHU: bit_vector(2 downto 0) := "101";
-
-    constant F3_STORE_SB: bit_vector(2 downto 0) := "000";
-    constant F3_STORE_SH: bit_vector(2 downto 0) := "001";
-    constant F3_STORE_SW: bit_vector(2 downto 0) := "010";
-
-    constant F3_BRANCH_BEQ: bit_vector(2 downto 0) := "000";
-    constant F3_BRANCH_BNE: bit_vector(2 downto 0) := "001";
-    constant F3_BRANCH_BLT: bit_vector(2 downto 0) := "100";
-    constant F3_BRANCH_BGE: bit_vector(2 downto 0) := "101";
-    constant F3_BRANCH_BLTU: bit_vector(2 downto 0) := "110";
-    constant F3_BRANCH_BGEU: bit_vector(2 downto 0) := "111";
-
-    constant F3_JALR: bit_vector(2 downto 0) := "000";
-
-    constant F2_MEM_LS_SIZE_B: bit_vector(1 downto 0) := "00";
-    constant F2_MEM_LS_SIZE_H: bit_vector(1 downto 0) := "01";
-    constant F2_MEM_LS_SIZE_W: bit_vector(1 downto 0) := "10";
-
-    constant F3_OPIMM_ADDI: bit_vector(2 downto 0) := "000";
-    constant F3_OPIMM_SLTI: bit_vector(2 downto 0) := "010";
-    constant F3_OPIMM_SLTIU: bit_vector(2 downto 0) := "011";
-    constant F3_OPIMM_XORI: bit_vector(2 downto 0) := "100";
-    constant F3_OPIMM_ORI: bit_vector(2 downto 0) := "110";
-    constant F3_OPIMM_ANDI: bit_vector(2 downto 0) := "111";
-
-    constant F3_OPIMM_SLLI: bit_vector(2 downto 0) := "001";
-    constant F7_OPIMM_SLLI: bit_vector(6 downto 0) := "0000000";
-    constant F3_OPIMM_SRLI: bit_vector(2 downto 0) := "101";
-    constant F7_OPIMM_SRLI: bit_vector(6 downto 0) := "0000000";
-    constant F3_OPIMM_SRAI: bit_vector(2 downto 0) := "101";
-    constant F7_OPIMM_SRAI: bit_vector(6 downto 0) := "0100000";
-
-    constant F3_OP_ADD: bit_vector(2 downto 0) := "000";
-    constant F7_OP_ADD: bit_vector(6 downto 0) := "0000000";
-    constant F3_OP_SUB: bit_vector(2 downto 0) := "000";
-    constant F7_OP_SUB: bit_vector(6 downto 0) := "0100000";
-    constant F3_OP_SLL: bit_vector(2 downto 0) := "001";
-    constant F7_OP_SLL: bit_vector(6 downto 0) := "0000000";
-    constant F3_OP_SLT: bit_vector(2 downto 0) := "010";
-    constant F7_OP_SLT: bit_vector(6 downto 0) := "0000000";
-    constant F3_OP_SLTU: bit_vector(2 downto 0) := "011";
-    constant F7_OP_SLTU: bit_vector(6 downto 0) := "0000000";
-    constant F3_OP_XOR: bit_vector(2 downto 0) := "100";
-    constant F7_OP_XOR: bit_vector(6 downto 0) := "0000000";
-    constant F3_OP_SRL: bit_vector(2 downto 0) := "101";
-    constant F7_OP_SRL: bit_vector(6 downto 0) := "0000000";
-    constant F3_OP_SRA: bit_vector(2 downto 0) := "101";
-    constant F7_OP_SRA: bit_vector(6 downto 0) := "0100000";
-    constant F3_OP_OR: bit_vector(2 downto 0) := "110";
-    constant F7_OP_OR: bit_vector(6 downto 0) := "0000000";
-    constant F3_OP_AND: bit_vector(2 downto 0) := "111";
-    constant F7_OP_AND: bit_vector(6 downto 0) := "0000000";
-
-
-
-
-
-
-
-
-
-
-
-
-
+    -- subtypes
     subtype AddrType is bit_vector (AddrSize-1 downto 0);
     subtype InstrType is bit_vector (InstrSize-1 downto 0);
     subtype BusDataType is bit_vector (BusDataSize-1 downto 0);
     subtype RegDataType is bit_vector (RegDataSize-1 downto 0);
     subtype DataType is bit_vector (DataSize-1 downto 0);
+    
     -- type for rd, rs1, rs2
     subtype RegAddrType is bit_vector(RegAddrSize-1 downto 0);
     type RegType is array (2**RegAddrSize-1 downto 0) of DataType;
     type MemType is array (2**AddrSize-1 downto 0) of DataType;
 
-    -- type for op-field, funct3 and imm
-    subtype OpType is bit_vector(6 downto 0);
+    -- type for op-field, funct3 and imm TODO!
+    -- dont know whether i need all imm declaration (delete comment after System.vhd is ready) 
+    subtype PcuOpType is bit_vector(1 downto 0);
+    subtype OpType is bit_vector(4 downto O);
+    subtype FuncType is bit_vector(15 downto 0);
+    subtype Func2Type is bit_vector(1 downto 0);
     subtype Func3Type is bit_vector(2 downto 0);
-    subtype Imm12Type is bit_vector(11 downto 0); 
+    subtype Func7Type is bit_vector(6 downto 0);
+    subtype Imm12Type is bit_vector(11 downto 0);
 
     -- test variables -- TO DELETE
 --    variable PC : AddrType := X"0000";
@@ -174,15 +90,116 @@ package cpu_defs_pack is
 --    variable Mem: MemType := (others => (others => '0') );
     -- end test variables;
 
-    -- should go to mnemonics
-    -- test opcode constants
-    constant OpCodeSType : OpType := "0100011";
-    -- more to follow …
-    constant Func3CodeSb : Func3Type := "000"; -- SB Instruction
-    constant OpCodeIType : OpType := "0010011";
-    constant Func3CodeXORI : Func3Type := "100";
-    -- more to follow …
+
+
+    -- PC unit opcodes
+    constant PCU_OP_NOP: PcuOpType := "00";
+    constant PCU_OP_INC: PcuOpType := "01";
+    constant PCU_OP_ASSIGN: PcuOpType := "10";
+    constant PCU_OP_RESET:  PcuOpType := "11";
+
+    -- Opcodes
+    constant OPCODE_LOAD: OpType := "00000";
+    constant OPCODE_STORE: OpType := "01000";
+    constant OPCODE_BRANCH: OpType := "11000";
+    constant OPCODE_JALR: OpType := "11001";
+    constant OPCODE_JAL: OpType := "11011";
+    constant OPCODE_SYSTEM: OpType := "11100";
+    constant OPCODE_OP: OpType := "01100";
+    constant OPCODE_OPIMM: OpType := "00100";
+    constant OPCODE_MISCMEM: OpType := "00011";
+    constant OPCODE_AUIPC: OpType := "00101";
+    constant OPCODE_LUI: OpType := "01101";
+
+    -- Flags
+    constant F3_LOAD_LB: Func3Type := "000";
+    constant F3_LOAD_LH: Func3Type := "001";
+    constant F3_LOAD_LW: Func3Type := "010";
+    constant F3_LOAD_LBU: Func3Type := "100";
+    constant F3_LOAD_LHU: Func3Type := "101";
+
+    constant F3_STORE_SB: Func3Type := "000";
+    constant F3_STORE_SH: Func3Type := "001";
+    constant F3_STORE_SW: Func3Type := "010";
+
+    constant F3_BRANCH_BEQ: Func3Type := "000";
+    constant F3_BRANCH_BNE: Func3Type := "001";
+    constant F3_BRANCH_BLT: Func3Type := "100";
+    constant F3_BRANCH_BGE: Func3Type := "101";
+    constant F3_BRANCH_BLTU: Func3Type := "110";
+    constant F3_BRANCH_BGEU: Func3Type := "111";
+
+    constant F3_JALR: Func3Type := "000";
+
+    constant F3_OPIMM_ADDI: Func3Type := "000";
+    constant F3_OPIMM_SLTI: Func3Type := "010";
+    constant F3_OPIMM_SLTIU: Func3Type := "011";
+    constant F3_OPIMM_XORI: Func3Type := "100";
+    constant F3_OPIMM_ORI: Func3Type := "110";
+    constant F3_OPIMM_ANDI: Func3Type := "111";
+
+    constant F3_OPIMM_SLLI: Func3Type := "001";
+    constant F7_OPIMM_SLLI: Func7Type := "0000000";
+    constant F3_OPIMM_SRLI: Func3Type := "101";
+    constant F7_OPIMM_SRLI: Func7Type := "0000000";
+    constant F3_OPIMM_SRAI: Func3Type := "101";
+    constant F7_OPIMM_SRAI: Func7Type := "0100000";
+
+    constant F3_OP_ADD: Func3Type := "000";
+    constant F7_OP_ADD: Func7Type := "0000000";
+    constant F3_OP_SUB: Func3Type := "000";
+    constant F7_OP_SUB: Func7Type := "0100000";
+    constant F3_OP_SLL: Func3Type := "001";
+    constant F7_OP_SLL: Func7Type := "0000000";
+    constant F3_OP_SLT: Func3Type := "010";
+    constant F7_OP_SLT: Func7Type := "0000000";
+    constant F3_OP_SLTU: Func3Type := "011";
+    constant F7_OP_SLTU: Func7Type := "0000000";
+    constant F3_OP_XOR: Func3Type := "100";
+    constant F7_OP_XOR: Func7Type := "0000000";
+    constant F3_OP_SRL: Func3Type := "101";
+    constant F7_OP_SRL: Func7Type := "0000000";
+    constant F3_OP_SRA: Func3Type := "101";
+    constant F7_OP_SRA: Func7Type := "0100000";
+    constant F3_OP_OR: Func3Type := "110";
+    constant F7_OP_OR: Func7Type := "0000000";
+    constant F3_OP_AND: Func3Type := "111";
+    constant F7_OP_AND: Func7Type := "0000000";
     -- end test opcode constants;
+
+    -- mnemonics 
+    constant mnemonic_nop : string( 1 to 3 ) := "nop";
+    constant mnemonic_stop: string( 1 to 4 ) := "stop";
+    -- Jump instruction --
+    constant mnemonic_jmp : string( 1 to 3 ) := "jmp";
+    constant mnemonic_jz : string( 1 to 2 ) := "jz";
+    constant mnemonic_jc : string( 1 to 2 ) := "jc";
+    constant mnemonic_jn : string( 1 to 2 ) := "jn";
+    constant mnemonic_jo : string( 1 to 2 ) := "jo";
+    constant mnemonic_jnz : string( 1 to 3 ) := "jnz";
+    constant mnemonic_jno : string( 1 to 3 ) := "jno";
+    constant mnemonic_jnn : string( 1 to 3 ) := "jnn";
+    constant mnemonic_jnc : string( 1 to 3 ) := "jnc";
+    -- Logic and arithmetic instruction --
+    constant mnemonic_not : string( 1 to 3 ) := "not";
+    constant mnemonic_and : string( 1 to 3 ) := "and";
+    constant mnemonic_add : string( 1 to 3 ) := "add";
+    constant mnemonic_addc : string( 1 to 4 ) := "addc";
+    constant mnemonic_sub : string( 1 to 3 ) := "sub";
+    constant mnemonic_subc : string( 1 to 4 ) := "subc";
+    constant mnemonic_or : string( 1 to 2 ) := "or";
+    constant mnemonic_xor : string( 1 to 3 ) := "xor";
+    constant mnemonic_srl : string( 1 to 3 ) := "srl";
+    constant mnemonic_sll : string( 1 to 3 ) := "sll";
+    constant mnemonic_sra : string( 1 to 3 ) := "sra";
+    constant mnemonic_slt : string( 1 to 3 ) := "slt";
+    constant mnemonic_sltu : string( 1 to 4 ) := "sltu";
+    -- load and store PC instructions --
+    constant mnemonic_ldpc: string( 1 to 4 ) := "ldpc";
+    constant mnemonic_stpc: string( 1 to 4 ) := "stpc";
+    -- In and Out instructions --
+    constant mnemonic_in: string( 1 to 2 ) := "in";
+    constant mnemonic_out: string( 1 to 3 ) := "out";
 
     function get (
         constant Memory : in MemType;
