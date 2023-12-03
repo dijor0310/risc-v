@@ -49,19 +49,19 @@ end instr_encode_pack;
 
 package body instr_encode_pack is
     function XORIcode( rd, rs1 : RegAddrType; imm : Imm12Type) return InstrType is
-        constant Instr : InstrType := imm & rs1 & F3_OP_XORI & rd & OPCODE_OPIMM & PCU_OP_RESET;
+        constant Instr : InstrType := imm & rs1 & F3_OPIMM_XORI & rd & OPCODE_OPIMM & PCU_OP_RESET;
         begin
             return Instr;
         end XORIcode;
 
     function ORIcode( rd, rs1 : RegAddrType; imm : Imm12Type) return InstrType is
-        constant Instr : InstrType := imm & rs1 & F3_OP_ORI & rd & OPCODE_OPIMM & PCU_OP_RESET;
+        constant Instr : InstrType := imm & rs1 & F3_OPIMM_ORI & rd & OPCODE_OPIMM & PCU_OP_RESET;
         begin
             return Instr;
         end ORIcode;
 
     function ANDIcode( rd, rs1 : RegAddrType; imm : Imm12Type) return InstrType is
-        constant Instr : InstrType := imm & rs1 & F3_OP_ANDI & rd & OPCODE_OPIMM & PCU_OP_RESET;
+        constant Instr : InstrType := imm & rs1 & F3_OPIMM_ANDI & rd & OPCODE_OPIMM & PCU_OP_RESET;
         begin
             return Instr;
         end ANDIcode;
@@ -91,65 +91,65 @@ package body instr_encode_pack is
         end SUBcode;    
 
     function ADDIcode( rd, rs1 : RegAddrType; imm : Imm12Type) return InstrType is
-        constant Instr : InstrType := imm & rs1 & F3_OP_ADDI & rd & OPCODE_OPIMM & PCU_OP_RESET;
+        constant Instr : InstrType := imm & rs1 & F3_OPIMM_ADDI & rd & OPCODE_OPIMM & PCU_OP_RESET;
         begin
             return Instr;
         end ADDIcode;
 
     function LBcode( rd, rs1 : RegAddrType; offset : Imm12Type) return InstrType is
-        constant Instr : InstrType := imm & rs1 & F3_OP_LB & rd & OPCODE_LOAD & PCU_OP_RESET;
+        constant Instr : InstrType := imm & rs1 & F3_LOAD_LB & rd & OPCODE_LOAD & PCU_OP_RESET;
         begin
             return Instr;
         end LBcode;
 
     function LBUcode( rd, rs1 : RegAddrType; offset : Imm12Type) return InstrType is
-        constant Instr : InstrType := imm & rs1 & F3_OP_LBU & rd & OPCODE_LOAD & PCU_OP_RESET;
+        constant Instr : InstrType := imm & rs1 & F3_LOAD_LBU & rd & OPCODE_LOAD & PCU_OP_RESET;
         begin
             return Instr;
         end LBUcode;
 
     function LHcode( rd, rs1 : RegAddrType; offset : Imm12Type) return InstrType is
-        constant Instr : InstrType := imm & rs1 & F3_OP_LH & rd & OPCODE_LOAD & PCU_OP_RESET;
+        constant Instr : InstrType := imm & rs1 & F3_LOAD_LH & rd & OPCODE_LOAD & PCU_OP_RESET;
         begin
             return Instr;
         end LHcode;
 
     function LHUcode( rd, rs1 : RegAddrType; offset : Imm12Type) return InstrType is
-        constant Instr : InstrType := imm & rs1 & F3_OP_LHU & rd & OPCODE_LOAD & PCU_OP_RESET;
+        constant Instr : InstrType := imm & rs1 & F3_LOAD_LHU & rd & OPCODE_LOAD & PCU_OP_RESET;
         begin
             return Instr;
         end LHUcode;
 
     function LWcode( rd, rs1 : RegAddrType; offset : Imm12Type) return InstrType is 
-        constant Instr : InstrType := imm & rs1 & F3_OP_LW & rd & OPCODE_LOAD & PCU_OP_RESET;
+        constant Instr : InstrType := imm & rs1 & F3_LOAD_LW & rd & OPCODE_LOAD & PCU_OP_RESET;
         begin
             return Instr;
         end LWcode;
 
     function SBcode( rs1, rs2 : RegAddrType; offset1 : Imm7Type; offset2 : Imm5Type) return InstrType is
-        constant Instr : InstrType := offset1 & rs2 & rs1 & F3_OP_SB & offset2 & OPCODE_STORE & PCU_OP_RESET;
+        constant Instr : InstrType := offset1 & rs2 & rs1 & F3_STORE_SB & offset2 & OPCODE_STORE & PCU_OP_RESET;
         begin
             return Instr;
         end SBcode;
     function SHcode( rs1, rs2 : RegAddrType; offset1 : Imm7Type; offset2 : Imm5Type) return InstrType is 
-        constant Instr : InstrType := offset1 & rs2 & rs1 & F3_OP_SH & offset2 & OPCODE_STORE & PCU_OP_RESET;
+        constant Instr : InstrType := offset1 & rs2 & rs1 & F3_STORE_SH & offset2 & OPCODE_STORE & PCU_OP_RESET;
         begin
             return Instr;
         end SHcode;
     function SWcode( rs1, rs2 : RegAddrType; offset1 : Imm7Type; offset2 : Imm5Type) return InstrType is
-        constant Instr : InstrType := offset1 & rs2 & rs1 & F3_OP_SW & offset2 & OPCODE_STORE & PCU_OP_RESET;
+        constant Instr : InstrType := offset1 & rs2 & rs1 & F3_STORE_SW & offset2 & OPCODE_STORE & PCU_OP_RESET;
         begin
             return Instr;
         end SWcode;
 
     function LUIcode( rd : RegAddrType; imm : Imm20Type) return InstrType is
-        constant Instr : InstrType := imm & rd & F3_OP_LUI & PCU_OP_RESET;
+        constant Instr : InstrType := imm & rd & OPCODE_LUI & PCU_OP_RESET;
         begin
             return Instr;
         end LUIcode;
 
     function AUIPCcode( rd : RegAddrType; imm : Imm20Type) return InstrType is
-        constant Instr : InstrType := imm & rd & F3_OP_AUIPC & PCU_OP_RESET;
+        constant Instr : InstrType := imm & rd & OPCODE_AUIPC & PCU_OP_RESET;
         begin
             return Instr;
         end AUIPCcode;
@@ -252,13 +252,13 @@ package body instr_encode_pack is
         end BGEUcode;
     
     function JALcode(offset: Imm20Type; rd: RegAddrType) return InstrType is
-        constant Instr : InstrType := offset & rs1 & F3_JUMP_JAL & OPCODE_JUMP & PCU_OP_RESET;
+        constant Instr : InstrType := offset & rs1 & F3_JUMP_JAL & OPCODE_JAL & PCU_OP_RESET;
         begin
             return Instr;
         end JALcode;
         
     function JALRcode(offset: Imm20Type; rd: RegAddrType) return InstrType is 
-        constant Instr : InstrType := offset & rs1 & F3_JUMP_JALR & OPCODE_JUMP & PCU_OP_RESET;
+        constant Instr : InstrType := offset & rs1 & F3_JUMP_JALR & OPCODE_JALR & PCU_OP_RESET;
         begin
             return Instr;
         end JALRcode;
