@@ -37,14 +37,14 @@ package instr_encode_pack is
     function SLTUcode( rd, rs1, rs2: RegAddrType) return InstrType;
     function SLTIcode( rd, rs1 : RegAddrType; imm : Imm12Type) return InstrType;
     function SLTIUcode( rd, rs1 : RegAddrType; imm : Imm12Type) return InstrType;
-    -- function BEQcode
-    -- function BNEcode
-    -- function BLTcode
-    -- function BGEcode
-    -- function BLTUcode
-    -- function BGEUcode
-    -- function JALcode
-    -- function JALRcode
+    function BEQcode( rs1, rs2 : RegAddrType; offset1 : Imm7Type; offset2 : Imm5Type) return InstrType;
+    function BNEcode( rs1, rs2 : RegAddrType; offset1 : Imm7Type; offset2 : Imm5Type) return InstrType;
+    function BLTcode( rs1, rs2 : RegAddrType; offset1 : Imm7Type; offset2 : Imm5Type) return InstrType;
+    function BGEcode( rs1, rs2 : RegAddrType; offset1 : Imm7Type; offset2 : Imm5Type) return InstrType;
+    function BLTUcode( rs1, rs2 : RegAddrType; offset1 : Imm7Type; offset2 : Imm5Type) return InstrType;
+    function BGEUcode( rs1, rs2 : RegAddrType; offset1 : Imm7Type; offset2 : Imm5Type) return InstrType;
+    function JALcode(offset: Imm20Type; rd: RegAddrType) return InstrType;
+    function JALRcode(offset: Imm20Type; rd: RegAddrType) return InstrType;
 end instr_encode_pack;
 
 package body instr_encode_pack is
@@ -174,16 +174,93 @@ package body instr_encode_pack is
         end SRAcode;
 
     function SLLIcode( rd, rs1 : RegAddrType; imm : Imm5Type) return InstrType is 
-        constant Instr : InstrType := F7_OPIMM_SLLI & imm & rs1 & F3_OP_SLL & rd & OPCODE_OP & PCU_OP_RESET;
+        constant Instr : InstrType := F7_OPIMM_SLLI & imm & rs1 & F3_OPIMM_SLL & rd & OPCODE_OPIMM & PCU_OP_RESET;
         begin
             return Instr;
         end SLLIcode;
 
-    function SRLIcode( rd, rs1 : RegAddrType; imm : Imm5Type) return InstrType;
-    function SRAIcode( rd, rs1 : RegAddrType; imm : Imm5Type) return InstrType;
-    function SLTcode( rd, rs1, rs2: RegAddrType) return InstrType;
-    function SLTUcode( rd, rs1, rs2: RegAddrType) return InstrType;
-    function SLTIcode( rd, rs1 : RegAddrType; imm : Imm12Type) return InstrType;
-    function SLTIUcode( rd, rs1 : RegAddrType; imm : Imm12Type) return InstrType;
+    function SRLIcode( rd, rs1 : RegAddrType; imm : Imm5Type) return InstrType is
+        constant Instr : InstrType := F7_OPIMM_SRLI & imm & rs1 & F3_OPIMM_SRLI & rd & OPCODE_OPIMM & PCU_OP_RESET;
+        begin
+            return Instr;
+        end SRLIcode;
+
+    function SRAIcode( rd, rs1 : RegAddrType; imm : Imm5Type) return InstrType is
+        constant Instr : InstrType := F7_OPIMM_SRAI & imm & rs1 & F3_OPIMM_SRAI & rd & OPCODE_OPIMM & PCU_OP_RESET;
+        begin
+            return Instr;
+        end SRAIcode;
+
+    function SLTcode( rd, rs1, rs2: RegAddrType) return InstrType is
+        constant Instr : InstrType := F7_OP_SLT & rs2 & rs1 & F3_OP_SLT & rd & OPCODE_OP & PCU_OP_RESET;
+        begin
+            return Instr;
+        end SLTcode;
+
+    function SLTUcode( rd, rs1, rs2: RegAddrType) return InstrType is
+        constant Instr : InstrType := F7_OP_SLTU & rs2 & rs1 & F3_OP_SLTU & rd & OPCODE_OP & PCU_OP_RESET;
+        begin
+            return Instr;
+        end SLTUcode;
+
+    function SLTIcode( rd, rs1 : RegAddrType; imm : Imm12Type) return InstrType is
+        constant Instr : InstrType := imm & rs1 & F3_OPIMM_SLTI & rd & OPCODE_OPIMM & PCU_OP_RESET;
+        begin
+            return Instr;
+        end SLTIcode;
+
+    function SLTIUcode( rd, rs1 : RegAddrType; imm : Imm12Type) return InstrType is
+        constant Instr : InstrType := imm & rs1 & F3_OPIMM_SLTIU & rd & OPCODE_OPIMM & PCU_OP_RESET;
+        begin
+            return Instr;
+        end SLTIUcode;
+
+    function BEQcode( rs1, rs2 : RegAddrType; offset1 : Imm7Type; offset2 : Imm5Type) return InstrType is
+        constant Instr : InstrType := offset1 & rs2 & rs1 & F3_BRANCH_BEQ & offset2 & OPCODE_BRANCH & PCU_OP_RESET;
+        begin
+            return Instr;
+        end BEQcode;
+
+    function BNEcode( rs1, rs2 : RegAddrType; offset1 : Imm7Type; offset2 : Imm5Type) return InstrType is
+        constant Instr : InstrType := offset1 & rs2 & rs1 & F3_BRANCH_BNE & offset2 & OPCODE_BRANCH & PCU_OP_RESET;
+        begin
+            return Instr;
+        end BNEcode;
+
+    function BLTcode( rs1, rs2 : RegAddrType; offset1 : Imm7Type; offset2 : Imm5Type) return InstrType
+        constant Instr : InstrType := offset1 & rs2 & rs1 & F3_BRANCH_BLT & offset2 & OPCODE_BRANCH & PCU_OP_RESET;
+        begin
+            return Instr;
+        end BLTcode;
+
+    function BGEcode( rs1, rs2 : RegAddrType; offset1 : Imm7Type; offset2 : Imm5Type) return InstrType is
+        constant Instr : InstrType := offset1 & rs2 & rs1 & F3_BRANCH_BGE & offset2 & OPCODE_BRANCH & PCU_OP_RESET;
+        begin
+            return Instr;
+        end BGEcode;
     
+    function BLTUcode( rs1, rs2 : RegAddrType; offset1 : Imm7Type; offset2 : Imm5Type) return InstrType is
+        constant Instr : InstrType := offset1 & rs2 & rs1 & F3_BRANCH_BLTU & offset2 & OPCODE_BRANCH & PCU_OP_RESET;
+        begin
+            return Instr;
+        end BLTUcode;
+    
+    function BGEUcode( rs1, rs2 : RegAddrType; offset1 : Imm7Type; offset2 : Imm5Type) return InstrType is 
+        constant Instr : InstrType := offset1 & rs2 & rs1 & F3_BRANCH_BGEU & offset2 & OPCODE_BRANCH & PCU_OP_RESET;
+        begin
+            return Instr;
+        end BGEUcode;
+    
+    function JALcode(offset: Imm20Type; rd: RegAddrType) return InstrType is
+        constant Instr : InstrType := offset & rs1 & F3_JUMP_JAL & OPCODE_JUMP & PCU_OP_RESET;
+        begin
+            return Instr;
+        end JALcode;
+        
+    function JALRcode(offset: Imm20Type; rd: RegAddrType) return InstrType is 
+        constant Instr : InstrType := offset & rs1 & F3_JUMP_JALR & OPCODE_JUMP & PCU_OP_RESET;
+        begin
+            return Instr;
+        end JALRcode;
+
 end instr_encode_pack;
