@@ -80,8 +80,10 @@ package cpu_defs_pack is
     subtype Func2Type is bit_vector(1 downto 0);
     subtype Func3Type is bit_vector(2 downto 0);
     subtype Func7Type is bit_vector(6 downto 0);
+    subtype Imm5Type is bit_vector(4 downto 0);
+    subtype Imm7Type is bit_vector(6 downto 0);
     subtype Imm12Type is bit_vector(11 downto 0);
-
+    subtype Imm20Type is bit_vector(19 downto 0);
     -- test variables -- TO DELETE
 --    variable PC : AddrType := X"0000";
 --    variable Instr : InstrType := (others => '0');
