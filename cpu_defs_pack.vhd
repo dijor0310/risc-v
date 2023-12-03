@@ -60,6 +60,14 @@ package cpu_defs_pack is
     constant IMM_S_B_START: integer := 11;
     constant IMM_S_B_END: integer := 7;
 
+    constant IMM_J_A_START: integer := 31;
+    constant IMM_J_A_END: integer := 20;
+
+    constant IMM_J_B_START: integer := 19;
+    constant IMM_J_B_END: integer := 12;
+
+    
+
     -- subtypes
     subtype AddrType is bit_vector (AddrSize-1 downto 0);
     subtype InstrType is bit_vector (InstrSize-1 downto 0);
