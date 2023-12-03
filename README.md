@@ -1,5 +1,16 @@
 # risc-v
-
+## Documentation
+### System
+`System.vhd` contains the fetch-decode-execute pipeline of a single RISC-V processor
+### mem_defs_pack
+`mem_defs_pack.vhd` contains init_memory and BitStream2Memory to initialize von Neumann memory with a given RISC-V assembly program
+### print_trace_pack
+`print_trace_pack.vhd` contains utility functions to print traces during the execution
+### cpu_defs_pack
+`cpu_defs_pack.vhd` contains all constants and mnemonics for the whole functional model
+### instr_exec_pack
+`instr_exec_pack.vhd` contains subprograms to run logical and arithmetic operations: (ADD(I), SUB, AND(I), XOR(I), OR(I), shift instructions)
+### instr_encode_pack
 ## TODO
 Freely change anything, now everything is more or less placeholder code.
 ### Andrei
