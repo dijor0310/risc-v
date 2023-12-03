@@ -15,28 +15,28 @@ package print_trace_pack is
     procedure print_tail( variable f: out text);
     procedure write_PC_CMD(
         variable l: inout line;
-        constant PC: in Data_Type;
-        constant OP: in Opcode_Type;
-        constant func3: in func3_type;
-        constant func7: in func7_type;
-        constant X, Y, Z: in Reg_Addr_Type);
+        constant PC: in DataType;
+        constant OP: in OpType;
+        constant func3: in func3type;
+        constant func7: in func7type;
+        constant X, Y, Z: in RegAddrType);
     procedure write_param(
         variable l: inout line;
-        constant P: in Data_Type);
+        constant P: in DataType);
     procedure write_no_param(
         variable l: inout line);
     procedure write_regs(
         variable l: inout line;
-        constant R0, R1, R2, R3: in Data_Type);
-    function hex_image ( d: Data_Type) return string;
-    function func7R(f7: Func7_Type) return string;
-    function func7Im(f7: Func7_Type) return string;
-    function func3I(f3: Func3_Type) return string;
-    function func3Im(f3: Func3_Type) return string;
-    function func3S(f3: Func3_Type) return string;
-    function func3R(f3: Func3_Type) return string;
-    function func3B(f3: Func3_Type) return string;
-    function cmd_image ( cmd: code_Type; func3: func3_type; func7: func7_type) return string;
+        constant R0, R1, R2: in DataType);
+    function hex_image ( d: DataType) return string;
+    function func7R(f7: Func7Type) return string;
+    function func7Im(f7: Func7Type) return string;
+    function func3I(f3: Func3Type) return string;
+    function func3Im(f3: Func3type) return string;
+    function func3S(f3: Func3Type) return string;
+    function func3R(f3: Func3Type) return string;
+    function func3B(f3: Func3type) return string;
+    function cmd_image ( cmd: opType; func3: func3type; func7: func7type) return string;
     function bool_character(b : boolean ) return character;
 end print_trace_pack;
 
@@ -64,11 +64,11 @@ package body print_trace_pack is
     
     procedure write_PC_CMD(
         variable l: inout line;
-        constant PC: in Data_Type;
-        constant OP: in Opcode_Type;
-        constant func3: in func3_type;
-        constant func7: in func7_type;
-        constant X, Y, Z: in Reg_Addr_Type) is
+        constant PC: in DataType;
+        constant OP: in OpType;
+        constant func3: in func3type;
+        constant func7: in func7type;
+        constant X, Y, Z: in RegAddrType) is
         
         begin 
                 write(  l , hex_image (PC), left, 3);
@@ -84,7 +84,7 @@ package body print_trace_pack is
 
     procedure write_param(
         variable l: inout line;
-        constant P: in Data_Type) is
+        constant P: in DataType) is
         
         begin 
                 write(  l , hex_image (P), left, 3);
@@ -103,7 +103,7 @@ package body print_trace_pack is
     
     procedure write_regs(
         variable l: inout line;
-        constant R0, R1, R2, R3: in Data_Type) is
+        constant R0, R1, R2: in DataType) is
         
         begin 
             write(  l , hex_image (R0), left, 3);
@@ -112,12 +112,10 @@ package body print_trace_pack is
             write( l , string'(" | ") );
             write(  l , hex_image (R2), left, 3);
             write( l , string'(" | ") );
-            write(  l , hex_image (R3), left, 3);
-            write( l , string'(" | ") );
 
     end write_regs;
                     
-    function hex_image (d : Data_Type) 
+    function hex_image (d : DataType) 
         return string is 
         constant hex_table : string(1 to 16) := "0123456789ABCDEF";
         variable result : string (1 to 3);
@@ -129,100 +127,108 @@ package body print_trace_pack is
                 return result;
                 
     end hex_image;
-          
-    function func7R(f7: Func7_Type) return string is
+    
+    -- deterime cmd_image for R-Type instruction      
+    function func7R(f7: Func7Type) return string is
         begin
         case f7 is 
-            when func7codesll => return "SLL  ";
-            when func7codesrl => return "SRL  ";
-            when func7codesra => return "SRA  ";
-            when func7codexor => return "XOR  ";
-            when func7codeor => return "OR   ";
-            when func7codeand => return "AND  ";
+            when F7_OP_SLL => return "SLL  ";
+            when F7_OP_SRL => return "SRL  ";
+            when F7_OP_SRA => return "SRA  ";
+            when F7_OP_XOR => return "XOR  ";
+            when F7_OP_OR => return "OR   ";
+            when F7_OP_AND => return "AND  ";
             when others => assert false report "Illigal Func7 in function func7r" severity waring;
         end case;
     end func7R;
-        
-    function func7Im(f7: Func7_Type) return string is
+    
+    -- deterime cmd_image for Im-Type instruction    
+    function func7Im(f7: Func7Type) return string is
         begin
         case f7 is 
-            when func7codeslli => return "SLLI ";
-            when func7codesrli => return "SRLI ";
-            when func7codesrai => return "SRAI ";
+            when F7_OPIMM_SLLI => return "SLLI ";
+            when F7_OPIMM_SRLI => return "SRLI ";
+            when F7_OPIMM_SRAI => return "SRAI ";
             when others => assert false report "Illigal Func7 in function func7r" severity waring;
         end case;
     end func7Im;
     
-    function func3I(f3: Func3_Type) return string is
+    -- deterime cmd_image for I-Type instruction
+    function func3I(f3: Func3Type) return string is
         begin
         case f3 is
-            when func3codelb => return "LB   ";
-            when func3codelh => return "LH   ";
-            when func3codelw => return "LW   ";
-            when func3codelbu => return "LBU  ";
-            when func3codelhu => return "LHU  ";
+            when F3_LOAD_LB => return "LB   ";
+            when F3_LOAD_LH => return "LH   ";
+            when F3_LOAD_LW => return "LW   ";
+            when F3_LOAD_LBU => return "LBU  ";
+            when F3_LOAD_LHU => return "LHU  ";
             when others => assert false report "Illigal Func3 in function func3I" severity waring;
         end case; 
     end func3I;
 
-    function func3Im(f3: Func3_Type) return string is
+    -- deterime cmd_image for Im-Type instruction with reference to Func7Im
+    function func3Im(f3: Func3type) return string is
         begin
         case f3 is
-            when func3codeslli => return func7Im(func7codeslli);
-            when func3codesrli => return func7Im(func7codesrli);
-            when func3codesrai => return func7Im(func7codesrai);
+            when F3_OPIMM_SLLI => return func7Im(F7_OPIMM_SLLI);
+            when F3_OPIMM_SRLI => return func7Im(F7_OPIMM_SRLI);
+            when F3_OPIMM_SRAI => return func7Im(F7_OPIMM_SRAI);
             when others => assert false report "Illigal Func3 in function func3Im" severity waring;
         end case; 
     end func3Im;
     
-    function func3S(f3: Func3_Type) return string is
+    -- deterime cmd_image for S-Type instruction
+    function func3S(f3: Func3Type) return string is
         begin
         case f3 is
-            when func3codeSb => return "SB   ";
-            when func3codesh => return "SH   ";
-            when func3codesw => return "SW   ";
+            when F3_STORE_SB => return "SB   ";
+            when F3_STORE_SH => return "SH   ";
+            when F3_STORE_SW => return "SW   ";
             when others => assert false report "Illigal Func3 in function func3S" severity waring;
         end case; 
     end func3S;
     
-    function func3R(f3: Func3_Type) return string is
+    -- deterime cmd_image for R-Type instruction with reference to Func7R
+    function func3R(f3: Func3Type) return string is
         begin
         case f3 is
-            when func3codesll => return func7R(func7codesll);
-            when func3codesrl => return func7R(func7codesrl);
-            when func3codesra => return func7R(func7codesra);
-            when func3codexor => return func7R(func7codexor);
-            when func3codeor => return func7R(func7codeor);
-            when func3codeand => return func7R(func7codeand);
+            when F3_OP_SLL => return func7R(F7_OP_SLL);
+            when F3_OP_SRL => return func7R(F7_OP_SRL);
+            when F3_OP_SRA => return func7R(F7_OP_SRA);
+            when F3_OP_XOR => return func7R(F7_OP_XOR);
+            when F3_OP_OR => return func7R(F7_OP_OR);
+            when F3_OP_AND => return func7R(F7_OP_AND);
             when others => assert false report "Illigal Func3 in function func3R" severity waring;
         end case; 
     end func3R;
     
-    function func3B(f3: Func3_Type) return string is
+    -- deterime cmd_image for B-Type instruction
+    function func3B(f3: Func3Type) return string is
         begin
         case f3 is
-            when func3codebeq => return "BEQ  ";
-            when func3codebne => return "BNE  ";
-            when func3codeblt => return "BLT  ";
-            when func3codebge => return "BGE  ";
-            when func3codebltu => return "BLTU ";
-            when func3codebgeu => return "BGEU ";
+            when F3_BRANCH_BEQ => return "BEQ  ";
+            when F3_BRANCH_BNE => return "BNE  ";
+            when F3_BRANCH_BLT => return "BLT  ";
+            when F3_BRANCH_BGE => return "BGE  ";
+            when F3_BRANCH_BLTU => return "BLTU ";
+            when F3_BRANCH_BGEU => return "BGEU ";
             when others => assert false report "Illigal Func3 in function func3B" severity waring;
         end case; 
     end func3B;
-
-    function cmd_image (cmd: Opcode_Type; func3: func3_type; func7: func7_type) return string is
+    
+    -- Print cmd_image of Instruction
+    function cmd_image (cmd: OpType; func3: func3type; func7: func7type) return string is
         begin
         case cmd is
-            when OpcodeIType => return func3I(func3);
-            when OpcodeImType => return func3Im(func3);
-            when OpcodeSType => return func3S(func3);
-            when OpcodeRType => return func3R(func3);
-            when OpcodeBType => return func3B(func3);
-            when OPcodeJAL => return "JAL  ";
-            when OPcodeJALR => return "JALR ";
-            when OpcodeLUI => return "LUI  ";
-            when OpcodeAUIPC => return "AUIPC";
+            when OPCODE_LOAD => return func3I(func3);
+            when OPCODE_OPIMM => return func3Im(func3);
+            when OPCODE_STORE => return func3S(func3);
+            when OPCODE_OP => return func3R(func3);
+            when Opcode_BRANCH => return func3B(func3);
+            when OPcode_JAL => return "JAL  ";
+            when OPcode_JALR => return "JALR ";
+            when Opcode_LUI => return "LUI  ";
+            when Opcode_AUIPC => return "AUIPC";
         end case;             
     end cmd_image;
     
