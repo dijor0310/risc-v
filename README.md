@@ -11,6 +11,7 @@
 ### instr_exec_pack
 `instr_exec_pack.vhd` contains subprograms to run logical and arithmetic operations: (ADD(I), SUB, AND(I), XOR(I), OR(I), shift instructions)
 ### instr_encode_pack
+`instr_encode_pack.vhd` contains subprograms to encode RISC-V instructions as binary code to load it into memory
 ## TODO
 Freely change anything, now everything is more or less placeholder code.
 ### Andrei
