@@ -20,7 +20,8 @@ begin
     -- variables declaration
     -- init Memory as MemType object TODO!
     variable Instr : InstrType; -- instruction to be decoded
-    variable Memory: MemType := init_memory;
+    variable Memory : MemType := init_memory;
+    variable Memory16
     variable Reg1 : RegType; -- selection for register 1
     variable Reg2 : RegType; -- selection for register 2
     variable RegD : RegType; -- selection for register D
@@ -38,9 +39,13 @@ begin
     -- Memory := 
     begin
         loop
+
             -- cmd FETCH
+
             Instr := get(Memory, PC);
+
             -- cmd DECODE 
+
             RegD := Instr(RD_STAR downto RD_END);
             Reg1 := Instr(RS1_START downto RS1_END);
             Reg2 := Instr(RS2_START downto RS2_END)
@@ -50,7 +55,9 @@ begin
             Func7 := Instr(FUNCT7_START downto FUNCT7_END);
             Func := "000000" & Instr(FUNCT7_START downto FUNCT7_END) & Instr(FUNCT3_START downto FUNCT3_END);
             PC := INC(PC);
+
             -- cmd COMPUTE
+
             case PcuOp is
                 when PCU_OP_NOP => Null -- keep PC the same
                     write_no_param( l );
@@ -63,24 +70,24 @@ begin
                     PC := ADDR_RESET;
                 when others =>
             end case;
-
             case OP is
 
-                --load instruction TODO!
+
+                --LOAD INSTRUCTION TODO!
                 when OPCODE_LOAD => write_Param(l,get(Memory,PC));
                         case Func3 is
+                            when F3_LOAD_LB => write_no_param(1);
+                                            Reg(bit_vector2natural (RegD)) := Memory()
                             when F3_LOAD_LB =>
-                            -- to do
-                            Set_Flags_Load(Data,Zero,Negative,Overflow);
-                            PC:=INC(PC);
-                            when F3_LOAD_LH =>
-                            when F3_LOAD_LW =>
                             when F3_LOAD_LBU =>
+                            when F3_LOAD_LH =>
                             when F3_LOAD_LHU =>
+                            when F3_LOAD_LW =>
                             when others =>
                         end case;
 
-                --store instruction TODO!
+
+                --STORE INSTRUCTION TODO!
                 when OPCODE_STORE => write_Param(l,get(Memory,PC));
                 if PcuOp = PCU_OP_RESET then
                     case Func3 is
@@ -92,70 +99,171 @@ begin
                 else
                 Null;
 
-                -- ARITHMETICAL, LOGICAL AND SHIFT INSTRUCTIONS
+
+                -- ARITHMETICAL, LOGICAL, SHIFT AND COMPARE INSTRUCTIONS (REGISTER)
                 when OPCODE_OP => write_no_param(1);
                     case Func3 & Func7 is
-                            -- not immediate logical and arithmetical instructions
-                            when F3_OP_ADD & F7_OP_ADD => 
-                                write_no_param(1);
-                                EXEC_ADD (Reg(bit_vector2natural()), Reg(bit_vector2natural ()), '0', Reg(bit_vector2natural()), Zero, Carry, Negative, Overflow);
-                            when F3_OP_SUB & F7_OP_SUB => 
-                                write_no_param(1);
-                                EXEC_SUB (Reg(bit_vector2natural()), Reg(bit_vector2natural ()), '0', Reg(bit_vector2natural()), Zero, Carry, Negative, Overflow);
-                            when F3_OP_XOR & F7_OP_XOR => 
-                                write_no_param(1);
-                                Data := Reg(bit_vector2natural(Reg1)) XOR Reg(bit_vector2natural(Reg2));
-                                Reg(bit_vector2natural (RegD)) := Data;
-                                Set_Flags_Logic(Data,Zero,Negative,Overflow);
-                            when F3_OP_AND & F7_OP_AND => 
-                                write_no_param(1);
-                                Data := Reg(bit_vector2natural(Reg1)) AND Reg(bit_vector2natural(Reg2));
-                                Reg(bit_vector2natural (RegD)) := Data;
-                                Set_Flags_Logic(Data,Zero,Negative,Overflow);
-                            when F3_OP_OR & F7_OP_OR => 
-                                write_no_param(1);
-                                Data := Reg(bit_vector2natural(Reg1)) OR Reg(bit_vector2natural(Reg2));
-                                Reg(bit_vector2natural (RegD)) := Data;
-                                Set_Flags_Logic(Data,Zero,Negative,Overflow);
 
-                            --shift instructions
-                            when F3_OP_SRL & F7_OP_SRL =>
-                            write_no_param(1);
-                            EXEC_SRL (Reg(bit_vector2natural()), Reg(bit_vector2natural ()), '0', Reg(bit_vector2natural()), Zero, Carry, Negative, Overflow);
-                            
+                        -- arithmetical
+                        when F3_OP_ADD & F7_OP_ADD => write_no_param(1);
+                                                    EXEC_ADD (Reg(bit_vector2natural(Reg1)), Reg(bit_vector2natural (Reg2)), '0', Reg(bit_vector2natural(RegD)), Zero, Carry, Negative, Overflow);
+                        when F3_OP_SUB & F7_OP_SUB => write_no_param(1);
+                                                    EXEC_SUB (Reg(bit_vector2natural(Reg1)), Reg(bit_vector2natural (Reg2)), '0', Reg(bit_vector2natural(RegD)), Zero, Carry, Negative, Overflow);
+
+                        -- logical
+                        when F3_OP_AND & F7_OP_AND => write_no_param(1);
+                                                    Data := Reg(bit_vector2natural(Reg1)) AND Reg(bit_vector2natural(Reg2));
+                                                    Reg(bit_vector2natural (RegD)) := Data;
+                                                    Set_Flags_Logic(Data,Zero,Negative,Overflow);
+                        when F3_OP_OR & F7_OP_OR => write_no_param(1);
+                                                    Data := Reg(bit_vector2natural(Reg1)) OR Reg(bit_vector2natural(Reg2));
+                                                    Reg(bit_vector2natural (RegD)) := Data;
+                                                    Set_Flags_Logic(Data,Zero,Negative,Overflow);
+                        when F3_OP_XOR & F7_OP_XOR => write_no_param(1);
+                                                    Data := Reg(bit_vector2natural(Reg1)) XOR Reg(bit_vector2natural(Reg2));
+                                                    Reg(bit_vector2natural (RegD)) := Data;
+                                                    Set_Flags_Logic(Data,Zero,Negative,Overflow);
+
+                        -- shift
+                        when F3_OP_SRL & F7_OP_SRL => write_no_param(1);
+                                                    Data := shift_right(unsigned(Reg1), to_integer(unsigned(Reg2(4 downto 0))));
+                                                    Reg(bit_vector2natural (RegD)) := Data;
+                                                    Set_Flags_Logic(Data,Zero,Negative,Overflow);
+                        when F3_OP_SLL & F7_OP_SLL => write_no_param(1);
+                                                    Data := shift_left(unsigned(Reg1), to_integer(unsigned(Reg2(4 downto 0))));
+                                                    Reg(bit_vector2natural (RegD)) := Data;
+                                                    Set_Flags_Logic(Data,Zero,Negative,Overflow);
+                        when F3_OP_SRA & F7_OP_SRA => write_no_param(1);
+                                                    Data := shift_right(signed(Reg1), to_integer(unsigned(Reg2(4 downto 0))));
+                                                    Reg(bit_vector2natural (RegD)) := Data;
+                                                    Set_Flags_Logic(Data,Zero,Negative,Overflow);
+
+                        -- compare
+                        when F3_OP_SLT & F7_OP_SLT => write_no_param(1);
+                                                    Data := SLT(Reg(bit_vector2natural (Reg1)), Reg(bit_vector2natural (Reg2)));
+                                                    Reg(bit_vector2natural (RegD)) := Data;
+                                                    Set_Flags_Logic(Data,Zero,Negative,Overflow);
+                        when F3_OP_SLTU & F7_OP_SLTU => write_no_param(1);
+                                                    Data := SLTU(Reg(bit_vector2natural (Reg1)), Reg(bit_vector2natural (Reg2)));
+                                                    Reg(bit_vector2natural (RegD)) := Data;
+                                                    Set_Flags_Logic(Data,Zero,Negative,Overflow);
+                        when others =>
                     end case;
-                     
-                    -- immediate
+
+
+                -- ADD UPPER IMMEDIATE TO PC
+                when OPCODE_AUIPC => write_no_param(1);
+                                    Data := PC + Instr(IMM_U_START downto IMM_U_END) & "000000000000";
+                                    Reg(bit_vector2natural (RegD)) := Data;
+                                    Set_Flags_Logic(Data,Zero,Negative,Overflow);
+
+
+                -- LOAD UPPER IMMEDIATE
+                when OPCODE_LUI => write_no_param(1);
+                                    Data := Instr(IMM_U_START downto IMM_U_END) & "000000000000";
+                                    Reg(bit_vector2natural (RegD)) := Data;
+                                    Set_Flags_Logic(Data,Zero,Negative,Overflow);
+
+
+                -- ARITHMETICAL, LOGICAL, SHIFT AND COMPARE INSTRUCTIONS (IMMEDIATE)
+                when OPCODE_OPIMM => write_no_param(1);
                     case Func3 is
-                        when F3_OPIMM_ADDI => 
-                        write_no_param(1);
-                        Data := signed(Reg1) + signed(Instr(IMM_I_START downto IMM_I_END));
-                        Set_Flags_Logic(Data,Zero,Negative,Overflow);
-                        when F3_OPIMM_LUI => 
-                        EXEC_LUI ('0', Reg(bit_vector2natural(RegD)), Zero, Carry, Negative, Overflow); --DIYOR!!!
-                        when F3_OPIMM_XORI => 
-                        write_no_param(1);
-                        --TODO further!!!
+                        --arithmetical imm
+                        when F3_OPIMM_ADDI => write_no_param(1);
+                                            Data := signed(bit_vector2natural(Reg1)) + signed(Instr(IMM_I_START downto IMM_I_END));
+                                            Set_Flags_Logic(Data,Zero,Negative,Overflow);
+                        --logical imm
+                        when F3_OPIMM_XORI => write_no_param(1);
+                                            Data := Reg(bit_vector2natural(Reg1)) XOR sign_extend(Instr(IMM_I_START downto IMM_I_END));
+                                            Reg(bit_vector2natural (RegD)) := Data;
+                                            Set_Flags_Logic(Data,Zero,Negative,Overflow);
+                        when F3_OPIMM_ORI => write_no_param(1);
+                                            Data := Reg(bit_vector2natural(Reg1)) OR sign_extend(Instr(IMM_I_START downto IMM_I_END));
+                                            Reg(bit_vector2natural (RegD)) := Data;
+                                            Set_Flags_Logic(Data,Zero,Negative,Overflow);
+                        when F3_OPIMM_ANDI => write_no_param(1);
+                                            Data := Reg(bit_vector2natural(Reg1)) OR sign_extend(Instr(IMM_I_START downto IMM_I_END));
+                                            Reg(bit_vector2natural (RegD)) := Data;
+                                            Set_Flags_Logic(Data,Zero,Negative,Overflow);
+                        -- compare imm
+                        when F3_OPIMM_SLTI => write_no_param(1);
+                                            if signed(bit_vector2natural(Reg1)) < signed(sign_extend(Instr(IMM_I_START downto IMM_I_END))) then
+                                                Reg(bit_vector2natural (RegD)) := X"0000000001";
+                                            else
+                                                Reg(bit_vector2natural (RegD)) := X"0000000000";
+                        when F3_OPIMM_SLTIU => write_no_param(1);
+                                            if unsigned(bit_vector2natural(Reg1)) < unsigned(sign_extend(Instr(IMM_I_START downto IMM_I_END))) then
+                                                Reg(bit_vector2natural (RegD)) := X"0000000001";
+                                            else
+                                                Reg(bit_vector2natural (RegD)) := X"0000000000";
+                        when others =>
+                    end case;
+
+                    case Func3 & Func7 is
+                        --shift imm
+                        when F3_OPIMM_SLLI & F7_OPIMM_SLLI => write_no_param(1);
+                                                            Data := shift_left(unsigned(Reg1), to_integer(unsigned(sign_extend(Instr(IMM_I_START downto IMM_I_END)))(4 downto 0)));
+                                                            Reg(bit_vector2natural (RegD)) := Data;
+                                                            Set_Flags_Logic(Data,Zero,Negative,Overflow);
+                        when F3_OPIMM_SRLI & F7_OPIMM_SRLI => write_no_param(1);
+                                                            Data := shift_right(unsigned(Reg1), to_integer(unsigned(sign_extend(Instr(IMM_I_START downto IMM_I_END)))(4 downto 0)));
+                                                            Reg(bit_vector2natural (RegD)) := Data;
+                                                            Set_Flags_Logic(Data,Zero,Negative,Overflow);
+                        when F3_OPIMM_SRAI & F7_OPIMM_SRAI => write_no_param(1);
+                                                            Data := shift_right(signed(Reg1), to_integer(unsigned(sign_extend(Instr(IMM_I_START downto IMM_I_END)))(4 downto 0)));
+                                                            Reg(bit_vector2natural (RegD)) := Data;
+                                                            Set_Flags_Logic(Data,Zero,Negative,Overflow);
                     
-
-  
-
-
-
-
-
-
-                            
-                            
-
-
-
-
-
-                
-
-
-
+                    -- BRANCH INSTRUCTIONS
+                    when OPCODE_BRANCH => write_no_param(1);
+                        case Func3 is
+                            when F3_BRANCH_BEQ => write_no_param(1);
+                                                if Reg(bit_vector2natural (Reg1)) = Reg(bit_vector2natural (Reg2)) then
+                                                    PC := PC + sign_extend(Instr(IMM_S_A_START) & Instr(IMM_S_B_END) & Instr(IMM_S_A_START - 1 downto IMM_S_A_END) & Instr(IMM_S_B_START downto IMM_S_B_END + 1) & "0");
+                                                else
+                                                    PC := PC + 4;
+                                                end if;
+                            when F3_BRANCH_BNE => write_no_param(1);
+                                                if Reg(bit_vector2natural (Reg1)) /= Reg(bit_vector2natural (Reg2)) then
+                                                    PC := PC + sign_extend(Instr(IMM_S_A_START) & Instr(IMM_S_B_END) & Instr(IMM_S_A_START - 1 downto IMM_S_A_END) & Instr(IMM_S_B_START downto IMM_S_B_END + 1) & "0");
+                                                else
+                                                    PC := PC + 4;
+                                                end if;
+                            when F3_BRANCH_BLT => write_no_param(1);
+                                                if signed(Reg(bit_vector2natural (Reg1))) < signed(Reg(bit_vector2natural (Reg2))) then
+                                                    PC := PC + sign_extend(Instr(IMM_S_A_START) & Instr(IMM_S_B_END) & Instr(IMM_S_A_START - 1 downto IMM_S_A_END) & Instr(IMM_S_B_START downto IMM_S_B_END + 1) & "0");
+                                                else
+                                                    PC := PC + 4;
+                                                end if;
+                            when F3_BRANCH_BGE => write_no_param(1);
+                                                if signed(Reg(bit_vector2natural (Reg1))) >= signed(Reg(bit_vector2natural (Reg2))) then
+                                                    PC := PC + sign_extend(Instr(IMM_S_A_START) & Instr(IMM_S_B_END) & Instr(IMM_S_A_START - 1 downto IMM_S_A_END) & Instr(IMM_S_B_START downto IMM_S_B_END + 1) & "0");
+                                                else
+                                                    PC := PC + 4;
+                                                end if;
+                            when F3_BRANCH_BLTU => write_no_param(1);
+                                                if unsigned(Reg(bit_vector2natural (Reg1))) < unsigned(Reg(bit_vector2natural (Reg2))) then
+                                                    PC := PC + sign_extend(Instr(IMM_S_A_START) & Instr(IMM_S_B_END) & Instr(IMM_S_A_START - 1 downto IMM_S_A_END) & Instr(IMM_S_B_START downto IMM_S_B_END + 1) & "0");
+                                                else
+                                                    PC := PC + 4;
+                                                end if;
+                            when F3_BRANCH_BGEU => write_no_param(1);
+                                                if unsigned(Reg(bit_vector2natural (Reg1))) >= unsigned(Reg(bit_vector2natural (Reg2))) then
+                                                    PC := PC + sign_extend(Instr(IMM_S_A_START) & Instr(IMM_S_B_END) & Instr(IMM_S_A_START - 1 downto IMM_S_A_END) & Instr(IMM_S_B_START downto IMM_S_B_END + 1) & "0");
+                                                else
+                                                    PC := PC + 4;
+                                                end if;
+                            when others =>
+                        end case;
+                    
+                    -- JUMP INSTRUCTIONS
+                    when OPCODE_JAL => write_no_param(1);
+                                    Reg(bit_vector2natural (RegD)) := PC + 4;
+                                    PC := PC + Instr(IMM_J_A_START) & Instr(IMM_J_B_START downto IMM_J_B_END) & Instr(IMM_J_A_END) & Instr(IMM_J_A_START -1 downto IMM_J_A_END + 1) & X"00001";
+                    when OPCODE_JAL => write_no_param(1);
+                                    Data := PC + 4;
+                                    PC := Reg(bit_vector2natural (RegD)) + Instr(IMM_I_START downto IMM_I_END) & X"0000000001"
+                                    Reg(bit_vector2natural (RegD)) := Data;
     end process;
 
 end functional;
