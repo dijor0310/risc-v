@@ -18,10 +18,10 @@ begin
 
 
     -- variables declaration
-    -- init Memory as MemType object TODO!
+    -- init Memory as MemType object 
     variable Instr : InstrType; -- instruction to be decoded
     variable Memory : MemType := init_memory;
-    variable Memory16
+    variable Memory1
     variable Reg1 : RegType; -- selection for register 1
     variable Reg2 : RegType; -- selection for register 2
     variable RegD : RegType; -- selection for register D
@@ -33,10 +33,7 @@ begin
     variable Data : DataType; -- temporary value
     variable DataImm : DataType; -- immediate value
 
-    -- Files TODO!
-
-
-    -- Memory := 
+ 
     begin
         loop
 
@@ -73,31 +70,39 @@ begin
             case OP is
 
 
-                --LOAD INSTRUCTION TODO!
+                --LOAD INSTRUCTION
                 when OPCODE_LOAD => write_Param(l,get(Memory,PC));
                         case Func3 is
-                            when F3_LOAD_LB => write_no_param(1);
-                                            Reg(bit_vector2natural (RegD)) := Memory()
-                            when F3_LOAD_LB =>
-                            when F3_LOAD_LBU =>
-                            when F3_LOAD_LH =>
-                            when F3_LOAD_LHU =>
-                            when F3_LOAD_LW =>
+                            when F3_LOAD_LB => write_Param(l,get(Memory,PC));
+                                            Data := Memory(Reg(bit_vector2natural (Reg1)) + sign_extend(Instr(IMM_I_START downto IMM_I_END)));
+                                            Reg(bit_vector2natural (RegD)) := sign_extend(Data);
+                            when F3_LOAD_LBU => write_Param(l,get(Memory,PC));
+                                            Data := Memory(Reg(bit_vector2natural (Reg1)) + sign_extend(Instr(IMM_I_START downto IMM_I_END)));
+                                            Reg(bit_vector2natural (RegD)) := zero_extend(Data);
+                            when F3_LOAD_LH => write_Param(l,get(Memory,PC));
+                                            Data := Memory(Reg(bit_vector2natural (Reg1)) + sign_extend(Instr(IMM_I_START downto IMM_I_END)));
+                                                Reg(bit_vector2natural (RegD)) := sign_extend(Data);
+                            when F3_LOAD_LHU => write_Param(l,get(Memory,PC));
+                                            Data := Memory(Reg(bit_vector2natural (Reg1)) + sign_extend(Instr(IMM_I_START downto IMM_I_END)));
+                                            Reg(bit_vector2natural (RegD)) := zero_extend(Data);
+                            when F3_LOAD_LW => write_Param(l,get(Memory,PC));
+                                                Data := Memory(Reg(bit_vector2natural (Reg1)) + sign_extend(Instr(IMM_I_START downto IMM_I_END)));
+                                                Reg(bit_vector2natural (RegD)) := Data;
                             when others =>
                         end case;
 
 
-                --STORE INSTRUCTION TODO!
-                when OPCODE_STORE => write_Param(l,get(Memory,PC));
-                if PcuOp = PCU_OP_RESET then
+                --STORE INSTRUCTION 
+                when OPCODE_STORE => write_Param(l,set(Memory,PC));
                     case Func3 is
-                        when F3_STORE_SB =>
-                        when F3_STORE_SH =>
-                        when F3_STORE_SW =>
+                        when F3_STORE_SB => write_Param(l,set(Memory,PC));
+                                            Memory(Reg(bit_vector2natural (Reg1)) + sign_extend(Instr(IMM_S_A_START downto IMM_S_A_END) & Instr(IMM_S_B_START downto IMM_S_B_END))) := Reg(bit_vector2natural (RegD));
+                        when F3_STORE_SH => write_Param(l,set(Memory,PC));
+                                            Memory(Reg(bit_vector2natural (Reg1)) + sign_extend(Instr(IMM_S_A_START downto IMM_S_A_END) & Instr(IMM_S_B_START downto IMM_S_B_END))) := Reg(bit_vector2natural (RegD))(15 downto 0);
+                        when F3_STORE_SW => write_Param(l,set(Memory,PC));
+                                            Memory(Reg(bit_vector2natural (Reg1)) + sign_extend(Instr(IMM_S_A_START downto IMM_S_A_END) & Instr(IMM_S_B_START downto IMM_S_B_END))) := Reg(bit_vector2natural (RegD))(7 downto 0);
                         when others =>
                     end case;
-                else
-                Null;
 
 
                 -- ARITHMETICAL, LOGICAL, SHIFT AND COMPARE INSTRUCTIONS (REGISTER)
@@ -153,14 +158,14 @@ begin
 
                 -- ADD UPPER IMMEDIATE TO PC
                 when OPCODE_AUIPC => write_no_param(1);
-                                    Data := PC + Instr(IMM_U_START downto IMM_U_END) & "000000000000";
+                                    Data := PC + sign_extend(Instr(IMM_U_START downto IMM_U_END) & "000000000000");
                                     Reg(bit_vector2natural (RegD)) := Data;
                                     Set_Flags_Logic(Data,Zero,Negative,Overflow);
 
 
                 -- LOAD UPPER IMMEDIATE
                 when OPCODE_LUI => write_no_param(1);
-                                    Data := Instr(IMM_U_START downto IMM_U_END) & "000000000000";
+                                    Data := sign_extend(Instr(IMM_U_START downto IMM_U_END) & "000000000000");
                                     Reg(bit_vector2natural (RegD)) := Data;
                                     Set_Flags_Logic(Data,Zero,Negative,Overflow);
 
@@ -213,6 +218,8 @@ begin
                                                             Data := shift_right(signed(Reg1), to_integer(unsigned(sign_extend(Instr(IMM_I_START downto IMM_I_END)))(4 downto 0)));
                                                             Reg(bit_vector2natural (RegD)) := Data;
                                                             Set_Flags_Logic(Data,Zero,Negative,Overflow);
+                            when others =>
+                    end case;                                        
                     
                     -- BRANCH INSTRUCTIONS
                     when OPCODE_BRANCH => write_no_param(1);
@@ -259,10 +266,10 @@ begin
                     -- JUMP INSTRUCTIONS
                     when OPCODE_JAL => write_no_param(1);
                                     Reg(bit_vector2natural (RegD)) := PC + 4;
-                                    PC := PC + Instr(IMM_J_A_START) & Instr(IMM_J_B_START downto IMM_J_B_END) & Instr(IMM_J_A_END) & Instr(IMM_J_A_START -1 downto IMM_J_A_END + 1) & X"00001";
-                    when OPCODE_JAL => write_no_param(1);
+                                    PC := PC + sign_extend(Instr(IMM_J_A_START) & Instr(IMM_J_B_START downto IMM_J_B_END) & Instr(IMM_J_A_END) & Instr(IMM_J_A_START -1 downto IMM_J_A_END + 1));
+                    when OPCODE_JALR => write_no_param(1);
                                     Data := PC + 4;
-                                    PC := Reg(bit_vector2natural (RegD)) + Instr(IMM_I_START downto IMM_I_END) & X"0000000001"
+                                    PC := sign_extend(Reg(bit_vector2natural (RegD)) + Instr(IMM_I_START downto IMM_I_END));
                                     Reg(bit_vector2natural (RegD)) := Data;
     end process;
 
