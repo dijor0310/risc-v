@@ -138,7 +138,7 @@ package body print_trace_pack is
             when F7_OP_XOR => return "XOR  ";
             when F7_OP_OR => return "OR   ";
             when F7_OP_AND => return "AND  ";
-            when others => assert false report "Illigal Func7 in function func7r" severity waring;
+            when others => assert false report "Illigal Func7 in function func7r" severity warning;
         end case;
     end func7R;
     
@@ -149,7 +149,7 @@ package body print_trace_pack is
             when F7_OPIMM_SLLI => return "SLLI ";
             when F7_OPIMM_SRLI => return "SRLI ";
             when F7_OPIMM_SRAI => return "SRAI ";
-            when others => assert false report "Illigal Func7 in function func7r" severity waring;
+            when others => assert false report "Illigal Func7 in function func7r" severity warning;
         end case;
     end func7Im;
     
@@ -162,7 +162,7 @@ package body print_trace_pack is
             when F3_LOAD_LW => return "LW   ";
             when F3_LOAD_LBU => return "LBU  ";
             when F3_LOAD_LHU => return "LHU  ";
-            when others => assert false report "Illigal Func3 in function func3I" severity waring;
+            when others => assert false report "Illigal Func3 in function func3I" severity warning;
         end case; 
     end func3I;
 
@@ -173,7 +173,7 @@ package body print_trace_pack is
             when F3_OPIMM_SLLI => return func7Im(F7_OPIMM_SLLI);
             when F3_OPIMM_SRLI => return func7Im(F7_OPIMM_SRLI);
             when F3_OPIMM_SRAI => return func7Im(F7_OPIMM_SRAI);
-            when others => assert false report "Illigal Func3 in function func3Im" severity waring;
+            when others => assert false report "Illigal Func3 in function func3Im" severity warning;
         end case; 
     end func3Im;
     
@@ -184,7 +184,7 @@ package body print_trace_pack is
             when F3_STORE_SB => return "SB   ";
             when F3_STORE_SH => return "SH   ";
             when F3_STORE_SW => return "SW   ";
-            when others => assert false report "Illigal Func3 in function func3S" severity waring;
+            when others => assert false report "Illigal Func3 in function func3S" severity warning;
         end case; 
     end func3S;
     
@@ -198,7 +198,7 @@ package body print_trace_pack is
             when F3_OP_XOR => return func7R(F7_OP_XOR);
             when F3_OP_OR => return func7R(F7_OP_OR);
             when F3_OP_AND => return func7R(F7_OP_AND);
-            when others => assert false report "Illigal Func3 in function func3R" severity waring;
+            when others => assert false report "Illigal Func3 in function func3R" severity warning;
         end case; 
     end func3R;
     
@@ -212,7 +212,7 @@ package body print_trace_pack is
             when F3_BRANCH_BGE => return "BGE  ";
             when F3_BRANCH_BLTU => return "BLTU ";
             when F3_BRANCH_BGEU => return "BGEU ";
-            when others => assert false report "Illigal Func3 in function func3B" severity waring;
+            when others => assert false report "Illigal Func3 in function func3B" severity warning;
         end case; 
     end func3B;
     

@@ -24,7 +24,7 @@ package body mem_defs_pack is
     variable Mem : MemType;
     variable j : integer := 0;
         begin
-            assert instr'length mod 16 = 0;
+            assert BitStream'length mod 16 = 0;
             for i in MemType'range loop
             if j + 31 <= BitStream'length then
                 Mem(i) := BitStream( j to j+31);
