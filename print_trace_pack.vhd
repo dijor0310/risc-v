@@ -16,7 +16,7 @@ package print_trace_pack is
     procedure write_PC_CMD(
         variable l: inout line;
         constant PC: in DataType;
-        constant OP: in OpType;
+        constant OP: in OpType4;
         constant func3: in func3type;
         constant func7: in func7type;
         constant X, Y, Z: in RegAddrType);
@@ -36,7 +36,7 @@ package print_trace_pack is
     function func3S(f3: Func3Type) return string;
     function func3R(f3: Func3Type) return string;
     function func3B(f3: Func3type) return string;
-    function cmd_image ( cmd: opType; func3: func3type; func7: func7type) return string;
+    function cmd_image ( cmd: opType4; func3: func3type; func7: func7type) return string;
     function bool_character(b : boolean ) return character;
 end print_trace_pack;
 
@@ -65,7 +65,7 @@ package body print_trace_pack is
     procedure write_PC_CMD(
         variable l: inout line;
         constant PC: in DataType;
-        constant OP: in OpType;
+        constant OP: in OpType4;
         constant func3: in func3type;
         constant func7: in func7type;
         constant X, Y, Z: in RegAddrType) is
@@ -217,7 +217,7 @@ package body print_trace_pack is
     end func3B;
     
     -- Print cmd_image of Instruction
-    function cmd_image (cmd: OpType; func3: func3type; func7: func7type) return string is
+    function cmd_image (cmd: OpType4; func3: func3type; func7: func7type) return string is
         begin
         case cmd is
             when OPCODE_LOAD => return func3I(func3);

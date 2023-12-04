@@ -7,6 +7,7 @@ use work.cpu_defs_pack.all;
 use work.mem_defs_pack.all;
 use work.instr_exec_pack.all;
 use work.bit_vector_natural_pack.all;
+use work.print_trace_pack.all;
 
 entity System is 
 end System;
@@ -21,14 +22,17 @@ begin
     -- init Memory as MemType object TODO!
     variable Instr : InstrType; -- instruction to be decoded
     variable Memory : MemType := init_memory;
-    variable Memory16
-    variable Reg1 : RegType; -- selection for register 1
-    variable Reg2 : RegType; -- selection for register 2
-    variable RegD : RegType; -- selection for register D
-    variable PC : AddrType := X"000";
-    variable OP : OpcodeType; -- ALU opcode
-    variable PcuOp : OpcodeType; -- ALU opcode
+--    variable Memory16
+    variable Reg : RegType;
+    variable Reg1 : RegAddrType; -- selection for register 1
+    variable Reg2 : RegAddrType; -- selection for register 2
+    variable RegD : RegAddrType; -- selection for register D
+    variable PC : AddrType := X"00000000";
+    variable OP : OpType6; -- ALU opcode
+    variable PcuOp : PcuOpType; -- ALU opcode
     variable Func: FuncType; -- ALU function
+    variable Func3: Func3Type;
+    variable Func7: Func7Type;
     variable Zero, Carry, Negative, Overflow : bit := '0' ;
     variable Data : DataType; -- temporary value
     variable DataImm : DataType; -- immediate value
@@ -46,14 +50,14 @@ begin
 
             -- cmd DECODE 
 
-            RegD := Instr(RD_STAR downto RD_END);
+            RegD := Instr(RD_START downto RD_END);
             Reg1 := Instr(RS1_START downto RS1_END);
-            Reg2 := Instr(RS2_START downto RS2_END)
+            Reg2 := Instr(RS2_START downto RS2_END);
             OP := Instr(OPCODE_START downto OPCODE_END);
             PcuOp := Instr(OPCODE_START downto OPCODE_END_2);
             Func3 := Instr(FUNCT3_START downto FUNCT3_END);
-            Func7 := Instr(FUNCT7_START downto FUNCT7_END);
-            Func := "000000" & Instr(FUNCT7_START downto FUNCT7_END) & Instr(FUNCT3_START downto FUNCT3_END);
+            Func7 := Instr(FUNCT7_R_START downto FUNCT7_R_END);
+            Func := "000000" & Instr(FUNCT7_R_START downto FUNCT7_R_END) & Instr(FUNCT3_START downto FUNCT3_END);
             PC := INC(PC);
 
             -- cmd COMPUTE
@@ -62,7 +66,8 @@ begin
                 when PCU_OP_NOP => Null -- keep PC the same
                     write_no_param( l );
                 when PCU_OP_INC => --increment
-                    PC <= bit_vector(unsigned(PC) + 4); -- 32bit byte addressing
+--                    PC <= bit_vector(unsigned(PC) + 4); -- 32bit byte addressing
+                    PC := INC(PC);
                     wait; -- stop
                 when PCU_OP_ASSIGN => -- no need for now
                     wait;

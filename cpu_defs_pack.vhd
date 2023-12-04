@@ -1,6 +1,6 @@
 library IEEE;
 use IEEE.STD_LOGIC_1164.ALL;
---use IEEE.NUMERIC_STD.ALL;
+use IEEE.NUMERIC_STD.ALL;
 library work;
 -- use work.type_defs.all
 
@@ -83,7 +83,8 @@ package cpu_defs_pack is
     -- type for op-field, funct3 and imm TODO!
     -- dont know whether i need all imm declaration (delete comment after System.vhd is ready) 
     subtype PcuOpType is bit_vector(1 downto 0);
-    subtype OpType is bit_vector(4 downto O);
+    subtype OpType4 is bit_vector(4 downto 0);
+    subtype OpType6 is bit_vector(6 downto 0);
     subtype FuncType is bit_vector(15 downto 0);
     subtype Func2Type is bit_vector(1 downto 0);
     subtype Func3Type is bit_vector(2 downto 0);
@@ -109,17 +110,17 @@ package cpu_defs_pack is
     constant PCU_OP_RESET:  PcuOpType := "11";
 
     -- Opcodes
-    constant OPCODE_LOAD: OpType := "00000";
-    constant OPCODE_STORE: OpType := "01000";
-    constant OPCODE_BRANCH: OpType := "11000";
-    constant OPCODE_JALR: OpType := "11001";
-    constant OPCODE_JAL: OpType := "11011";
-    constant OPCODE_SYSTEM: OpType := "11100";
-    constant OPCODE_OP: OpType := "01100";
-    constant OPCODE_OPIMM: OpType := "00100";
-    constant OPCODE_MISCMEM: OpType := "00011";
-    constant OPCODE_AUIPC: OpType := "00101";
-    constant OPCODE_LUI: OpType := "01101";
+    constant OPCODE_LOAD: OpType4 := "00000";
+    constant OPCODE_STORE: OpType4 := "01000";
+    constant OPCODE_BRANCH: OpType4 := "11000";
+    constant OPCODE_JALR: OpType4 := "11001";
+    constant OPCODE_JAL: OpType4 := "11011";
+    constant OPCODE_SYSTEM: OpType4 := "11100";
+    constant OPCODE_OP: OpType4 := "01100";
+    constant OPCODE_OPIMM: OpType4 := "00100";
+    constant OPCODE_MISCMEM: OpType4 := "00011";
+    constant OPCODE_AUIPC: OpType4 := "00101";
+    constant OPCODE_LUI: OpType4 := "01101";
 
     -- Flags
     constant F3_LOAD_LB: Func3Type := "000";
