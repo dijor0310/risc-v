@@ -27,7 +27,7 @@ package cpu_defs_pack is
     -- assuming BusDatasize == RegDataSize
     constant DataSize : integer := 32; 
 
-    constant ADDR_RESET: bit_vector(AddrSize-1 downto 0) :=  X"00000000";
+    constant ADDR_RESET: bit_vector(AddrSize-1 downto 0) :=  X"0000";
 
 
     -- Instruction for Layout Types
@@ -95,6 +95,8 @@ package cpu_defs_pack is
     subtype Imm7Type is bit_vector(6 downto 0);
     subtype Imm12Type is bit_vector(11 downto 0);
     subtype Imm20Type is bit_vector(19 downto 0);
+    subtype Imm8Type is bit_vector(7 downto 0);
+    subtype Imm16Type is bit_vector(15 downto 0);
     -- test variables -- TO DELETE
 --    variable PC : AddrType := X"0000";
 --    variable Instr : InstrType := (others => '0');

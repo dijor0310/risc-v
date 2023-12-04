@@ -15,8 +15,13 @@ package bit_vector_natural_pack is
      constant data_width : natural)
         return bit_vector;
     
-     function zero_extend(constant imm: Imm12Type) return bit_vector;
-    function sign_extend(constant imm: Imm12Type) return bit_vector;    
+    function zero_extend(constant imm: Imm12Type) return bit_vector;
+    function sign_extend(constant imm: Imm12Type) return bit_vector;
+    function zero_extend8(constant imm: Imm8Type) return bit_vector;
+    function sign_extend8(constant imm: Imm8Type) return bit_vector;    
+    function zero_extend16(constant imm: Imm16Type) return bit_vector;
+    function sign_extend16(constant imm: Imm16Type) return bit_vector;    
+    
 end bit_vector_natural_pack;
     
 package body bit_vector_natural_pack is
@@ -51,4 +56,41 @@ package body bit_vector_natural_pack is
             end if;
             return i;               
     end sign_extend;
+    
+    
+    function zero_extend8(constant imm: Imm8Type) return bit_vector is
+         variable i: bit_vector (31 downto 0);
+         begin
+             i := B"000000000000000000000000" & imm;
+             return i;                
+     end zero_extend8;
+         
+    function sign_extend8(constant imm: Imm8Type) return bit_vector is
+        variable i: bit_vector (31 downto 0);
+        begin
+            if imm(11) = '1' then
+                i := B"111111111111111111111111" & imm;
+            else 
+                i := B"000000000000000000000000" & imm;
+            end if;
+            return i;               
+    end sign_extend8;
+      
+    function zero_extend16(constant imm: Imm16Type) return bit_vector is 
+         variable i: bit_vector (31 downto 0);
+         begin
+             i := B"0000000000000000" & imm;
+             return i;                
+     end zero_extend16;
+     
+    function sign_extend16(constant imm: Imm16Type) return bit_vector is
+        variable i: bit_vector (31 downto 0);
+        begin
+            if imm(11) = '1' then
+                i := B"1111111111111111" & imm;
+            else 
+                i := B"0000000000000000" & imm;
+            end if;
+            return i;               
+    end sign_extend16;
 end bit_vector_natural_pack;        

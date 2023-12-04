@@ -17,20 +17,20 @@ package body mem_defs_pack is
     function init_memory return MemType is
         begin
             return BitStream2Mem(
-                XORIcode("00001", "00010", "00011"));
+                XORIcode("00010", "00011", "000010000000"));
     end init_memory;
     
     function BitStream2Mem( BitStream : bit_vector) return MemType is
     variable Mem : MemType;
-    variable j : integer := 0;
+    variable j : integer := BitStream'left;
         begin
             assert BitStream'length mod 16 = 0;
             for i in MemType'range loop
-            if j + 31 <= BitStream'length then
-                Mem(i) := BitStream( j to j+31);
-                j := j + 32;
-            elsif j + 15 <= BitStream'length then
-                Mem(i) := X"0000" & BitStream( j to j+15 );
+            if j - 31 >= 0 then
+                Mem(i) := BitStream( j downto j-31);
+                j := j - 32;
+--            elsif j + 15 <= BitStream'length then
+--                Mem(i) := X"0000" & BitStream( j to j+15 );
             else
                 Mem(i) := (others => '0');
             end if;
