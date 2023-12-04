@@ -23,6 +23,7 @@ begin
     variable Instr : InstrType; -- instruction to be decoded
     variable Memory : MemType := init_memory;
 --    variable Memory16
+    variable Memory1 : MemType;
     variable Reg : RegType;
     variable Reg1 : RegAddrType; -- selection for register 1
     variable Reg2 : RegAddrType; -- selection for register 2
