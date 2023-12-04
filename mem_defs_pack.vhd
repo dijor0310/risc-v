@@ -6,11 +6,14 @@ use IEEE.NUMERIC_STD.ALL;
 --use work.bit_vector_natural_pack.all;
 use work.cpu_defs_pack.all;
 use work.instr_encode_pack.all;
+use std.textio.all;
 
 package mem_defs_pack is
     -- constant memory_content : MemType;
     function init_memory return MemType;
     function BitStream2Mem ( BitStream : bit_vector ) return MemType;
+    impure function dump_memory(memory: MemType; filename:string) return MemType;
+
 end mem_defs_pack;
 
 package body mem_defs_pack is
@@ -32,9 +35,24 @@ package body mem_defs_pack is
 --            elsif j + 15 <= BitStream'length then
 --                Mem(i) := X"0000" & BitStream( j to j+15 );
             else
-                Mem(i) := (others => '0');
+                -- everything is xor -FOR TEST
+                Mem(i) := BitStream( 31 downto 0); 
+--                Mem(i) := (others => 0);
             end if;
             end loop;
             return Mem;
     end BitStream2Mem;
+    
+    impure function dump_memory(memory: MemType; filename:string) return MemType is
+        file f : text open WRITE_MODE is filename;
+        variable l : line;
+
+        begin
+        for tmp_addr in memory'low to memory'high loop
+            write(l,memory(tmp_addr));
+            writeline( f , l );
+        end loop;
+        return memory;
+
+    end dump_memory;
 end mem_defs_pack;

@@ -21,7 +21,8 @@ package bit_vector_natural_pack is
     function sign_extend8(constant imm: Imm8Type) return bit_vector;    
     function zero_extend16(constant imm: Imm16Type) return bit_vector;
     function sign_extend16(constant imm: Imm16Type) return bit_vector;    
-    
+    function sign_extend20(constant imm: Imm20Type) return bit_vector;    
+
 end bit_vector_natural_pack;
     
 package body bit_vector_natural_pack is
@@ -49,7 +50,7 @@ package body bit_vector_natural_pack is
     function sign_extend(constant imm: Imm12Type) return bit_vector is
         variable i: bit_vector (31 downto 0);
         begin
-            if imm(11) = '1' then
+            if imm(imm'left) = '1' then
                 i := B"11111111111111111111" & imm;
             else 
                 i := B"00000000000000000000" & imm;
@@ -68,7 +69,7 @@ package body bit_vector_natural_pack is
     function sign_extend8(constant imm: Imm8Type) return bit_vector is
         variable i: bit_vector (31 downto 0);
         begin
-            if imm(11) = '1' then
+            if imm(imm'left) = '1' then
                 i := B"111111111111111111111111" & imm;
             else 
                 i := B"000000000000000000000000" & imm;
@@ -86,11 +87,23 @@ package body bit_vector_natural_pack is
     function sign_extend16(constant imm: Imm16Type) return bit_vector is
         variable i: bit_vector (31 downto 0);
         begin
-            if imm(11) = '1' then
+            if imm(imm'left) = '1' then
                 i := B"1111111111111111" & imm;
             else 
                 i := B"0000000000000000" & imm;
             end if;
             return i;               
     end sign_extend16;
+    
+    function sign_extend20(constant imm: Imm20Type) return bit_vector is
+        variable i: bit_vector (31 downto 0);
+        begin
+            if imm(imm'left) = '1' then
+                i := B"111111111111" & imm;
+            else 
+                i := B"000000000000" & imm;
+            end if;
+            return i;               
+    end sign_extend20;  
+
 end bit_vector_natural_pack;        

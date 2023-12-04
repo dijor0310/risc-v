@@ -139,7 +139,7 @@ package body instr_exec_pack is
             variable R : out DataType;
             variable Z,CO,N,O : out bit ) is
         begin
-            EXEC_ADD(A,(NOT B),'1',R,Z,CO,N,O);
+            EXEC_ADD(A,("NOT"(B)),'1',R,Z,CO,N,O);
         end EXEC_SUB;
 
     procedure EXEC_SLL (
@@ -236,23 +236,39 @@ package body instr_exec_pack is
         end EXEC_SLT;
     
     function "NOT" (constant A :DataType) return DataType is
+        variable R : DataType;
         begin
-            return NOT A;
+            for i in A'reverse_range loop
+                R(i) := not A(i);
+            end loop;
+            return R;
         end "NOT";
-
+        
     function "AND" (constant A, B :DataType) return DataType is
+        variable R : DataType;
         begin
-            return (A AND B);
+            for i in A'reverse_range loop
+                R(i) := A(i) and B(i);
+            end loop;
+            return R;
         end "AND";
         
     function "OR" (constant A, B :DataType) return DataType is
+        variable R : DataType;
         begin
-            return (A OR B);
+            for i in A'reverse_range loop
+                R(i) := A(i) or B(i);
+            end loop;
+            return R;
         end "OR";
 
     function "XOR" (constant A, B :DataType) return DataType is 
+        variable R : DataType;
         begin
-            return (A XOR B);
+            for i in A'reverse_range loop
+                R(i) := A(i) xor B(i);
+            end loop;
+            return R;
         end "XOR";
 
     procedure Set_Flags_Load(
