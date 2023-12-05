@@ -97,6 +97,7 @@ package cpu_defs_pack is
     subtype Imm20Type is bit_vector(19 downto 0);
     subtype Imm8Type is bit_vector(7 downto 0);
     subtype Imm16Type is bit_vector(15 downto 0);
+    subtype Imm13Type is bit_vector(12 downto 0);
     -- test variables -- TO DELETE
 --    variable PC : AddrType := X"0000";
 --    variable Instr : InstrType := (others => '0');
